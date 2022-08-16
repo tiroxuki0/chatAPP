@@ -32,7 +32,7 @@ const rows = [
 ];
 
 const StyledBox = styled(Box)(({ theme }) => ({
-  height: 500,
+  height: 550,
   width: "100%",
   "& .MuiDataGrid-cell--editing": {
     backgroundColor: "rgb(255,215,115, 0.19)",

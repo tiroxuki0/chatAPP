@@ -47,6 +47,7 @@ const BoxStyled = styledd(Box)`
 const SignIn = styled(Link)`
   color: white;
   text-decoration: none;
+  text-transform: uppercase;
   font-weight: 600;
 `;
 
@@ -292,7 +293,7 @@ function DashboardContent() {
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Outlet />
-            <Copyright sx={{ pt: 4 }} />
+            <Copyright sx={{ pt: 2 }} />
           </Container>
         </BoxStyled>
       </Box>

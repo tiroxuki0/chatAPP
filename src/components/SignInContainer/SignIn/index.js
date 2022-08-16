@@ -1,7 +1,7 @@
 import * as React from "react";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -25,7 +25,12 @@ function Copyright(props) {
       {...props}
     >
       {"Copyright © "}
-
+      <a
+        style={{ color: "white", textDecoration: "none" }}
+        href="https://mui.com/"
+      >
+        Tiroxuki
+      </a>{" "}
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -52,10 +57,14 @@ export default function SignIn() {
         alignItems: "center",
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-        <LockOutlinedIcon />
+      <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+        <ExitToAppIcon />
       </Avatar>
-      <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+      <Typography
+        component="h1"
+        variant="h5"
+        sx={{ mt: 1, mb: 3, textTransform: "uppercase" }}
+      >
         Sign in
       </Typography>
       <ValidatorForm onSubmit={handleSubmit} sx={{ mt: 1 }}>

@@ -5,7 +5,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import Typography from "@mui/material/Typography";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import { Link } from "react-router-dom";
@@ -15,6 +15,27 @@ const LinkStyled = styled(Link)`
   color: #f2eee9;
   text-decoration: none;
 `;
+
+function Copyright(props) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <a
+        style={{ color: "white", textDecoration: "none" }}
+        href="https://mui.com/"
+      >
+        Tiroxuki
+      </a>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 export default function SignUp() {
   const [username, setUsername] = React.useState("");
@@ -42,10 +63,14 @@ export default function SignUp() {
         alignItems: "center",
       }}
     >
-      <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-        <LockOutlinedIcon />
+      <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
+        <PersonAddAltIcon />
       </Avatar>
-      <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+      <Typography
+        component="h1"
+        variant="h5"
+        sx={{ mt: 1, mb: 3, textTransform: "uppercase" }}
+      >
         Sign up
       </Typography>
       <ValidatorForm onSubmit={handleSubmit} sx={{ mt: 3 }}>
@@ -113,6 +138,7 @@ export default function SignUp() {
           </Grid>
         </Grid>
       </ValidatorForm>
+      <Copyright sx={{ mt: 5 }} />
     </Box>
   );
 }
