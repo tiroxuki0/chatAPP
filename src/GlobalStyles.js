@@ -7,6 +7,7 @@ export default createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
+    overflow: hidden;
     &::-webkit-scrollbar {
       width: 8px;
       height: 8px

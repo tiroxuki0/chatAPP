@@ -4,8 +4,7 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import SignIn from "./SignIn";
-import SignUp from "./SignUp";
-import { useParams } from "react-router-dom";
+
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -16,7 +15,6 @@ const darkTheme = createTheme({
 });
 
 export default function SignInContainer() {
-  let { path } = useParams();
   return (
     <ThemeProvider theme={darkTheme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
@@ -38,7 +36,7 @@ export default function SignInContainer() {
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          {path === "sign-in" ? <SignIn /> : <SignUp />}
+          <SignIn />
         </Grid>
       </Grid>
     </ThemeProvider>

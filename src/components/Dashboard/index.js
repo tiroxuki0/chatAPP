@@ -1,5 +1,8 @@
 import * as React from "react";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
@@ -10,7 +13,6 @@ import Avatar from "@mui/material/Avatar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import Container from "@mui/material/Container";
@@ -19,8 +21,10 @@ import { Link } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "./listItems";
-import { Outlet } from "react-router-dom";
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
+import { useSelector } from "react-redux";
+import { mainListItems } from "./listItems";
+import ChatPage from "./ChatPage";
 import styledd from "styled-components";
 
 const BoxStyled = styledd(Box)`
@@ -28,7 +32,6 @@ const BoxStyled = styledd(Box)`
     width: 8px;
     height: 8px
   }
-
   &::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
@@ -51,26 +54,29 @@ const SignIn = styled(Link)`
   font-weight: 600;
 `;
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <a
-        style={{ color: "#000", textDecoration: "none" }}
-        href="https://mui.com/"
-      >
-        Tiroxuki
-      </a>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+const ListStyled = styledd(List)`
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+`;
+const ListTop = styledd.div`
+  .MuiListItemIcon-root{
+    margin-left: 7px;
+    @media only screen and (max-width: 600px) {
+      margin-left: 0px;
+    }
+  }
+`;
+
+const ListBottom = styledd.div`
+  .MuiListItemIcon-root{
+    margin-left: 7px;
+    @media only screen and (max-width: 600px) {
+      margin-left: 0px;
+    }
+  }
+`;
 
 const settings = [
   {
@@ -143,8 +149,8 @@ const darkTheme = createTheme({
 });
 
 function DashboardContent() {
-  const [login, setLogin] = React.useState(false);
-  const [open, setOpen] = React.useState(true);
+  const login = useSelector((state) => state.auth.login);
+  const [open, setOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const toggleDrawer = () => {
@@ -253,12 +259,12 @@ function DashboardContent() {
               </Box>
             ) : (
               <Box sx={{ flexGrow: 0 }}>
-                <SignIn to="/auth/sign-in">Sign In</SignIn>
+                <SignIn to="/sign-in">Sign In</SignIn>
               </Box>
             )}
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+        <Drawer variant="permanent" open={open} sx={{ height: "100vh" }}>
           <Toolbar
             sx={{
               display: "flex",
@@ -271,12 +277,17 @@ function DashboardContent() {
               <ChevronLeftIcon />
             </IconButton>
           </Toolbar>
-          <Divider />
-          <List component="nav">
-            {mainListItems}
-            <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
-          </List>
+          <ListStyled component="nav">
+            <ListTop>{mainListItems}</ListTop>
+            <ListBottom>
+              <ListItemButton>
+                <ListItemIcon>
+                  <DarkModeOutlinedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Change Theme" />
+              </ListItemButton>
+            </ListBottom>
+          </ListStyled>
         </Drawer>
         <BoxStyled
           component="main"
@@ -291,9 +302,8 @@ function DashboardContent() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Outlet />
-            <Copyright sx={{ pt: 2 }} />
+          <Container maxWidth="xl" disableGutters>
+            <ChatPage />
           </Container>
         </BoxStyled>
       </Box>
