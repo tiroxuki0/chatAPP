@@ -1,4 +1,5 @@
 import "./App.css";
+import React from "react";
 import Dashboard from "./components/Dashboard";
 import Error from "./Error";
 import SignInContainer from "./components/SignInContainer";
@@ -7,6 +8,11 @@ import AddRoomModal from "./components/Modals/AddRoom";
 import AddUserModal from "./components/Modals/AddUser";
 import useWindowSize from "./hooks/useWindowSize";
 import styled from "styled-components";
+import Load from "./components/Effects/Load";
+import SetAvatar from "./components/SignInContainer/SetAvatar";
+import RequiredAuth from "./components/RequiredAuth";
+import { useDispatch } from "react-redux";
+import { setStateChatWindows, setMobile } from "./redux/authSlice";
 
 const AlertNotSupported = styled.div`
   width: 100vw;
@@ -20,7 +26,17 @@ const AlertNotSupported = styled.div`
 `;
 
 function App() {
+  const dispatch = useDispatch();
   const windowSize = useWindowSize();
+
+  React.useEffect(() => {
+    if (windowSize.width >= 900) {
+      dispatch(setStateChatWindows(false));
+      dispatch(setMobile(false));
+    } else {
+      dispatch(setMobile(true));
+    }
+  }, [windowSize]);
 
   return (
     <>
@@ -32,15 +48,22 @@ function App() {
         <div className="App">
           <Router>
             <Routes>
-              <Route path="/" element={<Dashboard />}>
-                {/* <Route path="/" element={<Home />} /> */}
-              </Route>
-              <Route path="/sign-in" element={<SignInContainer />} />
+              <Route
+                path="/"
+                element={
+                  <RequiredAuth>
+                    <Dashboard />
+                  </RequiredAuth>
+                }
+              />
+              <Route path="/set-avatar" element={<SetAvatar />} />
+              <Route path="/auth/:path" element={<SignInContainer />} />
               <Route path="/*" element={<Error />} />
             </Routes>
           </Router>
           <AddUserModal />
           <AddRoomModal />
+          <Load />
         </div>
       )}
     </>

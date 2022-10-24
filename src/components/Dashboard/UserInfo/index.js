@@ -1,24 +1,22 @@
 import React from "react";
 import styled from "styled-components";
 import Header from "./Header";
-import Rooms from "./Rooms";
-import Users from "./Users";
+import Body from "./Body";
 import { useSelector } from "react-redux";
 
-const ChatListWrapper = styled.div`
+const InfoWrapper = styled.div`
   height: 100%;
 `;
 
-const ChatList = () => {
+const UserInfo = () => {
   const viewChatList = useSelector((state) => state.data.viewChatList);
 
   return (
-    <ChatListWrapper style={{ display: viewChatList ? "" : "none" }}>
+    <InfoWrapper style={{ display: viewChatList ? "none" : "" }}>
       <Header />
-      <Rooms />
-      <Users />
-    </ChatListWrapper>
+      <Body />
+    </InfoWrapper>
   );
 };
 
-export default ChatList;
+export default UserInfo;

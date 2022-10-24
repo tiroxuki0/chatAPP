@@ -1,8 +1,6 @@
 import React from "react";
-import Typography from "@mui/material/Typography";
 import styledd from "styled-components";
 import { styled } from "@mui/material/styles";
-import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import Paper from "@mui/material/Paper";
@@ -12,6 +10,7 @@ import useModal from "../../../hooks/useModal";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { useDispatch, useSelector } from "react-redux";
 import { setStateChatWindows } from "../../../redux/authSlice";
+import Skeleton from "@mui/material/Skeleton";
 
 const HeaderWrapper = styledd(Paper)`
   display: flex;
@@ -37,7 +36,7 @@ const HeaderLeft = styledd.div`
 const RoomName = styledd.div`
   height: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   flex-direction: column;
   > div {
@@ -106,12 +105,9 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const WindowsHeader = () => {
   const dispatch = useDispatch();
-  const [usersInRoom, setUsersInRoom] = React.useState([]);
   const theme = useSelector((state) => state.auth.theme);
   const roomSelected = useSelector((state) => state.data.roomSelected);
   const chatWindows = useSelector((state) => state.auth.chatWindows);
-  const rooms = useSelector((state) => state.data.rooms);
-  const users = useSelector((state) => state.data.users);
   const { modalAddUser } = useModal();
 
   const handleOpenAddUser = () => {
@@ -121,15 +117,6 @@ const WindowsHeader = () => {
   const toggleChatWindows = () => {
     dispatch(setStateChatWindows(!chatWindows));
   };
-
-  React.useEffect(() => {
-    if (users) {
-      const result = users.filter((user) => {
-        return roomSelected.members.includes(user.uid);
-      });
-      setUsersInRoom(result);
-    }
-  }, [roomSelected, rooms]);
 
   return (
     <HeaderWrapper
@@ -143,10 +130,7 @@ const WindowsHeader = () => {
     >
       <HeaderLeft>
         <Mobile>
-          <IconButton
-            onClick={toggleChatWindows}
-            className="feed_header_left_arrow"
-          >
+          <IconButton onClick={toggleChatWindows}>
             <KeyboardArrowLeftIcon
               fontSize="large"
               sx={{ color: theme ? "#797c8c" : "#adb5bd" }}
@@ -154,41 +138,22 @@ const WindowsHeader = () => {
           </IconButton>
         </Mobile>
         {roomSelected.private == true ? (
-          <>
-            {roomSelected.photoURL && roomSelected.photoURL.includes("http") ? (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={roomSelected.photoURL}
-                size="large"
-              />
-            ) : (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
-                size="large"
-              />
-            )}
-          </>
+          <Skeleton
+            animation="wave"
+            variant="circular"
+            width={40}
+            height={40}
+            size="large"
+          />
         ) : (
           ""
         )}
         <RoomName style={{ color: theme ? "#495057" : "#adb5bd" }}>
-          <Typography variant="h6" gutterBottom component="div">
-            {roomSelected.private == true
-              ? roomSelected.displayName
-              : roomSelected.roomName}
-          </Typography>
+          <Skeleton animation="wave" height={10} width="80px" />
           {roomSelected.private == true ? (
             ""
           ) : (
-            <Typography
-              variant="caption"
-              gutterBottom
-              component="div"
-              sx={{ color: "#797c8c", fontWeight: 600 }}
-            >
-              {roomSelected.roomDes}
-            </Typography>
+            <Skeleton animation="wave" height={10} width="40px" />
           )}
         </RoomName>
       </HeaderLeft>
@@ -203,29 +168,27 @@ const WindowsHeader = () => {
             />
           </IconButton>
           <AvatarGroupStyled max={4}>
-            {usersInRoom.map((user) => {
-              let avatar = null;
-              if (user.photoURL && user.photoURL.includes("http")) {
-                avatar = (
-                  <Avatar
-                    key={user.displayName}
-                    alt={user.displayName}
-                    src={user.photoURL}
-                    size="large"
-                  />
-                );
-              } else {
-                avatar = (
-                  <Avatar
-                    key={user.displayName}
-                    alt={user.displayName}
-                    src={`data:image/svg+xml;base64,${user.photoURL}`}
-                    size="large"
-                  />
-                );
-              }
-              return avatar;
-            })}
+            <Skeleton
+              animation="wave"
+              variant="circular"
+              width={30}
+              height={30}
+              size="large"
+            />
+            <Skeleton
+              animation="wave"
+              variant="circular"
+              width={30}
+              height={30}
+              size="large"
+            />
+            <Skeleton
+              animation="wave"
+              variant="circular"
+              width={30}
+              height={30}
+              size="large"
+            />
           </AvatarGroupStyled>
         </HeaderRight>
       )}
@@ -234,26 +197,3 @@ const WindowsHeader = () => {
 };
 
 export default React.memo(WindowsHeader);
-
-{
-  /* <StyledBadge
-            overlap="circular"
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            variant="dot"
-            sx={{ mr: 1 }}
-          >
-            {roomSelected.photoURL && roomSelected.photoURL.includes("http") ? (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={roomSelected.photoURL}
-                size="large"
-              />
-            ) : (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
-                size="large"
-              />
-            )}
-          </StyledBadge> */
-}

@@ -36,3 +36,47 @@
     transform: rotate(360deg);
   }
 }
+
+.MuiFormHelperText-root {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.MuiList-root {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.Mui-selected {
+  background-color: #e9e9e9 !important;
+}
+
+.MuiList-root .MuiMenuItem-root:first-child {
+  padding-top: 14px !important;
+}
+.MuiList-root .MuiMenuItem-root:last-child {
+  padding-bottom: 14px !important;
+}
+
+@media screen and (max-width: 600px) {
+  .feed_header_left_arrow {
+    padding: 0 !important;
+  }
+  .nav_bar {
+    width: 45px !important;
+  }
+  .nav_avatar {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .message_image {
+    width: 100% !important;
+  }
+  .message_image a {
+    height: 100px !important;
+  }
+}
+@media screen and (max-width: 400px) {
+  .feed_container {
+    height: calc(100% - 30px) !important;
+  }
+}

@@ -18,21 +18,30 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
+const ButtonStyled = styled(Button)`
+  min-width: 40px !important;
+  transition: all 0.3s ease;
+  &:hover{
+    background #4eac6d !important;
+    svg{
+      fill: white;
+    }
+  }
+`;
+
 const AddIconStyled = styled(AddIcon)`
   color: #4eac6d;
 `;
 
-const ButtonStyled = styled(Button)`
-  background: #edf7f0 !important;
-  min-width: 50px !important;
-`;
-
 const TextFieldStyled = styled(TextField)`
-  input::placeholder {
-    font-weight: 600;
+  .MuiOutlinedInput-root {
+    color: currentColor;
+    &::placeholder {
+      color: currentColor;
+      font-weight: 600;
+    }
   }
   border-radius: 4px;
-  background: #edf7f0;
   .MuiFilledInput-root:before,
   .MuiFilledInput-root:after {
     display: none !important;
@@ -44,7 +53,9 @@ const TextFieldStyled = styled(TextField)`
 `;
 
 const ListHeader = () => {
-  const rooms = useSelector((state) => state.data.rooms);
+  const viewBody = useSelector((state) => state.data.viewBody);
+  const theme = useSelector((state) => state.auth.theme);
+  const search = useSelector((state) => state.data.search);
   const dispatch = useDispatch();
   const { modalAddRoom } = useModal();
 
@@ -59,18 +70,34 @@ const ListHeader = () => {
   return (
     <ListHeaderWrapper>
       <Wrapper>
-        <h3 style={{ fontSize: "20px" }}>🔥 Chats</h3>
-        <Tooltip title="Add rooms">
-          <ButtonStyled onClick={handleOpenModalAdd}>
-            <AddIconStyled />
-          </ButtonStyled>
-        </Tooltip>
+        <h3 style={{ fontSize: "20px", color: theme ? "black" : "#adb5bd" }}>
+          🔥 Chats
+        </h3>
+        {viewBody && (
+          <Tooltip title="Add Room">
+            <ButtonStyled
+              onClick={handleOpenModalAdd}
+              sx={{
+                background: theme
+                  ? "#edf7f0 !important"
+                  : "rgba(78,172,109,.1) !important",
+              }}
+            >
+              <AddIconStyled sx={{ width: 20, height: 20 }} />
+            </ButtonStyled>
+          </Tooltip>
+        )}
       </Wrapper>
       <TextFieldStyled
+        value={search}
         fullWidth
         placeholder="Search here..."
         size="small"
         onChange={(e) => handleInput(e)}
+        sx={{
+          background: theme ? "#edf7f0" : "#2e2e2e",
+          color: theme ? "#777777 !important" : "silver !important",
+        }}
       />
     </ListHeaderWrapper>
   );
