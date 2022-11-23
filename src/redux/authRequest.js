@@ -4,22 +4,36 @@ import * as authActions from "./authSlice";
 const normalSignIn = async (dispatch, navigate, data) => {
   dispatch(authActions.signInStart());
   try {
-    const userCheck = await firebaseServices.checkExist("users", {
-      field: "email",
-      operator: "==",
-      value: data.email,
-    });
-    if (userCheck.code == 1) {
-      dispatch(authActions.signInFailed());
-      return { code: 0, message: "Email is not valid" };
+    const result = await firebaseServices.firebaseSignIn(data);
+    /*  */
+    if (result.code === 0) {
+      if (result.error.code.includes("user-not-found")) {
+        // notify("error", `Your email is not valid!`);
+        dispatch(authActions.signInFailed());
+        return { code: 0, message: "Email is not valid" };
+      } else {
+        // notify("error", `Wrong password!`);
+        dispatch(authActions.signInFailed());
+        return { code: 0, message: "Wrong password" };
+      }
+    } else {
+      const userCheck = await firebaseServices.checkExist("users", {
+        field: "email",
+        operator: "==",
+        value: data.email,
+      });
+      if (userCheck.code === 1) {
+        dispatch(authActions.signInFailed());
+        return { code: 0, message: "Email is not valid" };
+      }
+      if (userCheck.data.password !== data.password) {
+        dispatch(authActions.signInFailed());
+        return { code: 0, message: "Wrong password!" };
+      }
+      dispatch(authActions.signInSuccess(userCheck.data));
+      navigate("/");
+      return { code: 1, message: "Sign in successfully" };
     }
-    if (userCheck.data.password !== data.password) {
-      dispatch(authActions.signInFailed());
-      return { code: 0, message: "Password is not valid" };
-    }
-    dispatch(authActions.signInSuccess(userCheck.data));
-    navigate("/");
-    return { code: 1, message: "Sign in successfully" };
   } catch (err) {
     dispatch(authActions.signInFailed());
     return { code: 0, message: "Something went wrong!", err };
@@ -58,6 +72,7 @@ const facebookSignIn = async (dispatch, navigate) => {
       dispatch(authActions.signInFailed());
       return { code: 0, message: "User cancel!" };
     }
+    console.log(result);
     const { displayName, email, photoURL, uid } = result.data.user;
     const providerId = result.data.providerId;
     /* check user exist */

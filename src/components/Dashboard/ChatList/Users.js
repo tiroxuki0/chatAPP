@@ -23,6 +23,7 @@ import {
   setUsersDisplay,
 } from "../../../redux/dataSlice";
 import * as firebaseServices from "../../../firebase/services";
+import { default_avatar } from "../../../assets/imgs";
 
 const BoxStyled = styledd(Box)`
   overflow: hidden auto;
@@ -84,7 +85,25 @@ const FireNav = styled(List)({
   },
 });
 
-const StyledBadge = styled(Badge)(({ theme }) => ({
+const StyledBadgeOff = styled(Badge)(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    backgroundColor: "silver",
+    color: "silver",
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    "&::after": {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      border: "1px solid currentColor",
+      content: '""',
+    },
+  },
+}));
+
+const StyledBadgeOnl = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     backgroundColor: "#44b700",
     color: "#44b700",
@@ -119,7 +138,8 @@ function CustomizedList() {
   const usersDisplay = useSelector(usersDisplayRemaining);
   const theme = useSelector((state) => state.auth.theme);
   const user = useSelector((state) => state.auth.user);
-  const search = useSelector((state) => state.data.search);
+  const statusData = useSelector((state) => state.data.status);
+  // const search = useSelector((state) => state.data.search);
   const rooms = useSelector((state) => state.data.rooms);
   const messages = useSelector((state) => state.data.messages);
   const viewBody = useSelector((state) => state.data.viewBody);
@@ -378,6 +398,7 @@ function CustomizedList() {
             }
           }
         }
+        const isOnline = statusData.find((status) => status.uid == u.uid);
         /* end handle */
         return (
           <ListItemButton
@@ -391,38 +412,67 @@ function CustomizedList() {
             onClick={() => handleChatWindows(u)}
           >
             <ListItemIcon sx={{ color: "inherit" }}>
-              {u.photoURL && u.photoURL.includes("http") ? (
-                <Avatar
-                  alt={u.displayName}
-                  src={u.photoURL}
-                  sx={{ width: 35, height: 35 }}
-                />
+              {isOnline && isOnline.state === "offline" ? (
+                <StyledBadgeOff
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant="dot"
+                >
+                  {u.photoURL && u.photoURL.includes("http") ? (
+                    <Avatar
+                      alt={u.displayName}
+                      src={u.photoURL}
+                      sx={{ width: 35, height: 35 }}
+                    />
+                  ) : (
+                    <>
+                      {u.photoURL ? (
+                        <Avatar
+                          alt={u.displayName}
+                          src={`data:image/svg+xml;base64,${u.photoURL}`}
+                          sx={{ width: 35, height: 35 }}
+                        />
+                      ) : (
+                        <Avatar
+                          alt={u.displayName}
+                          src={default_avatar}
+                          sx={{ width: 35, height: 35 }}
+                        />
+                      )}
+                    </>
+                  )}
+                </StyledBadgeOff>
               ) : (
-                <Avatar
-                  alt={u.displayName}
-                  src={`data:image/svg+xml;base64,${u.photoURL}`}
-                  sx={{ width: 35, height: 35 }}
-                />
+                <StyledBadgeOnl
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant="dot"
+                >
+                  {u.photoURL && u.photoURL.includes("http") ? (
+                    <Avatar
+                      alt={u.displayName}
+                      src={u.photoURL}
+                      sx={{ width: 35, height: 35 }}
+                    />
+                  ) : (
+                    <>
+                      {u.photoURL ? (
+                        <Avatar
+                          alt={u.displayName}
+                          src={`data:image/svg+xml;base64,${u.photoURL}`}
+                          sx={{ width: 35, height: 35 }}
+                        />
+                      ) : (
+                        <Avatar
+                          alt={u.displayName}
+                          src={default_avatar}
+                          sx={{ width: 35, height: 35 }}
+                        />
+                      )}
+                    </>
+                  )}
+                </StyledBadgeOnl>
               )}
-              {/* <StyledBadge
-                overlap="circular"
-                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                variant="dot"
-              >
-                {u.photoURL && u.photoURL.includes("http") ? (
-                  <Avatar
-                    alt={u.displayName}
-                    src={u.photoURL}
-                    sx={{ width: 30, height: 30 }}
-                  />
-                ) : (
-                  <Avatar
-                    alt={u.displayName}
-                    src={`data:image/svg+xml;base64,${u.photoURL}`}
-                    sx={{ width: 30, height: 30 }}
-                  />
-                )}
-              </StyledBadge> */}
             </ListItemIcon>
             <div
               style={{

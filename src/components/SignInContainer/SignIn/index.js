@@ -14,6 +14,7 @@ import {
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { signIn } from "../../../assets/imgs";
+import { updateUserStatus } from "../../../firebase/services";
 
 function Copyright(props) {
   return (
@@ -49,18 +50,19 @@ export default React.memo(function SignIn({ toastNoti }) {
     event.preventDefault();
     const user = { email, password };
     const res = await normalSignIn(dispatch, navigate, user);
-    if (res.code == 0) {
+    if (res.code === 0) {
       toastNoti(res);
+    } else {
+      updateUserStatus();
     }
   };
 
   const handleFBSignIn = async () => {
-    const result = await facebookSignIn(dispatch, navigate);
-    console.log(result);
+    await facebookSignIn(dispatch, navigate);
   };
   const handleGGSignIn = async () => {
-    const result = await googleSignIn(dispatch, navigate);
-    console.log(result);
+    await googleSignIn(dispatch, navigate);
+    updateUserStatus();
   };
 
   return (
@@ -73,7 +75,11 @@ export default React.memo(function SignIn({ toastNoti }) {
         alignItems: "center",
       }}
     >
-      <img src={signIn} style={{ width: "55px", height: "55px" }} />
+      <img
+        src={signIn}
+        style={{ width: "55px", height: "55px" }}
+        alt="sign-in logo"
+      />
       <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
         Welcome Back !
       </Typography>
@@ -135,12 +141,14 @@ export default React.memo(function SignIn({ toastNoti }) {
               <img
                 src="https://img.icons8.com/color/48/000000/google-logo.png"
                 style={{ width: "35px", height: "35px" }}
+                alt="google icon"
               />
             </Button>
             <Button onClick={handleFBSignIn} sx={{ minWidth: 30 }}>
               <img
                 src="https://img.icons8.com/color/48/000000/facebook-new.png"
                 style={{ width: "35px", height: "35px" }}
+                alt="facebook icon"
               />
             </Button>
           </Grid>

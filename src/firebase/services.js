@@ -1,7 +1,12 @@
 /* AUTH SERVICES */
-import { v4 as uuid } from "uuid";
-import { auth, db, storage } from "./config";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { auth, db, rtdb } from "./config";
+import {
+  onDisconnect,
+  onValue,
+  ref,
+  set as setDB,
+  serverTimestamp as serverTimestampDB,
+} from "firebase/database";
 import {
   collection,
   addDoc,
@@ -27,8 +32,12 @@ import {
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 
-const normalSignIn = async (email, password) => {
-  const result = await signInWithEmailAndPassword(auth, email, password)
+const firebaseSignIn = async (input) => {
+  const result = await signInWithEmailAndPassword(
+    auth,
+    input.email,
+    input.password
+  )
     .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
@@ -89,7 +98,6 @@ const firebaseSignOut = async () => {
 };
 
 /* USER SERVICES */
-
 const checkExist = async (collectionName, conditions) => {
   try {
     const { field, operator, value } = conditions;
@@ -205,11 +213,67 @@ const updateDocument = async (collectionName, updateOptions, id) => {
   }
 };
 
+/* user status */
+const updateUserStatus = async () => {
+  const uid = auth.currentUser?.uid;
+  if (uid) {
+    // Create a reference to this user's specific status node.
+    // This is where we will store data about being online/offline.
+    const userStatusDatabaseRef = ref(rtdb, "status/" + uid);
+
+    // We'll create two constants which we will write to
+    // the Realtime database when this device is offline
+    // or online.
+    const isOfflineForDatabase = {
+      state: "offline",
+      last_changed: serverTimestampDB(),
+    };
+
+    const isOnlineForDatabase = {
+      state: "online",
+      last_changed: serverTimestampDB(),
+    };
+
+    // Create a reference to the special '.info/connected' path in
+    // Realtime Database. This path returns `true` when connected
+    // and `false` when disconnected.
+    const connectedRef = ref(rtdb, ".info/connected");
+    onValue(connectedRef, (snap) => {
+      if (snap.val() === true) {
+        console.log("connected");
+        onDisconnect(userStatusDatabaseRef)
+          .set(isOfflineForDatabase)
+          .then(function () {
+            // The promise returned from .onDisconnect().set() will
+            // resolve as soon as the server acknowledges the onDisconnect()
+            // request, NOT once we've actually disconnected:
+            // https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
+
+            // We can now safely set ourselves as 'online' knowing that the
+            // server will mark us as offline once we lose connection.
+            setDB(userStatusDatabaseRef, isOnlineForDatabase);
+          });
+      } else {
+        console.log("not connected");
+      }
+    });
+  }
+};
+
+const logoutUserStatus = (uid) => {
+  const userStatusDatabaseRef = ref(rtdb, "status/" + uid);
+  const isOfflineForDatabase = {
+    state: "offline",
+    last_changed: serverTimestampDB(),
+  };
+  setDB(userStatusDatabaseRef, isOfflineForDatabase);
+};
+
 export {
   updateDocument,
   fbSignIn,
   ggSignIn,
-  normalSignIn,
+  firebaseSignIn,
   createUser,
   checkExist,
   firebaseSignOut,
@@ -217,4 +281,6 @@ export {
   getAllDocs,
   updateMemberInRoom,
   updateMemberInSeen,
+  updateUserStatus,
+  logoutUserStatus,
 };

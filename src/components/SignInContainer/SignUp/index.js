@@ -65,7 +65,7 @@ export default React.memo(function SignUp({ toastNoti }) {
       operator: "==",
       value: email,
     });
-    if (mailCheck.code == 1) {
+    if (mailCheck.code === 1) {
       dispatch(setRegisterInfo(user));
       navigate("/set-avatar");
     } else {
@@ -84,7 +84,11 @@ export default React.memo(function SignUp({ toastNoti }) {
           alignItems: "center",
         }}
       >
-        <img src={signUp} style={{ width: "55px", height: "55px" }} />
+        <img
+          src={signUp}
+          style={{ width: "55px", height: "55px" }}
+          alt="sign-up logo"
+        />
         <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
           Create An Account
         </Typography>

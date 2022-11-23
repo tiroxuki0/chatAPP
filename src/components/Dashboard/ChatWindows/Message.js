@@ -5,6 +5,7 @@ import Paper from "@mui/material/Paper";
 import { formatRelative } from "date-fns";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
+import { default_avatar } from "../../../assets/imgs";
 
 const Wrapper = styled.div`
   max-width: 100%;
@@ -44,7 +45,7 @@ const ImageArrayStyled = styled.div`
   gap: 2px;
   align-items: flex-end;
   justify-content: flex-start;
-  width: 60%;
+  width: 90%;
   &.right {
     justify-content: flex-end;
   }
@@ -153,12 +154,23 @@ const Message = (props) => {
           className={props.photoURL !== "hidden" ? "visible" : "hidden"}
         />
       ) : (
-        <Avatar
-          alt={props.username}
-          src={`data:image/svg+xml;base64,${props.photoURL}`}
-          sx={{ width: 30, height: 30 }}
-          className={props.photoURL !== "hidden" ? "visible" : "hidden"}
-        />
+        <>
+          {props.photoURL ? (
+            <Avatar
+              alt={props.username}
+              src={`data:image/svg+xml;base64,${props.photoURL}`}
+              sx={{ width: 30, height: 30 }}
+              className={props.photoURL !== "hidden" ? "visible" : "hidden"}
+            />
+          ) : (
+            <Avatar
+              alt={props.username}
+              src={default_avatar}
+              sx={{ width: 30, height: 30 }}
+              className={props.photoURL !== "hidden" ? "visible" : "hidden"}
+            />
+          )}
+        </>
       )}
       <MessageWrapper
         className={clsx(
@@ -192,18 +204,17 @@ const Message = (props) => {
               className={clsx(props.side, "message_image")}
               style={{ display: "flex" }}
             >
-              {props.message.map((img) => {
+              {props.message.map((img, index) => {
                 return (
                   <a
+                    key={index}
                     data-fancybox="gallery"
                     href={img}
                     style={{
                       width:
                         props.message.length === 1
                           ? `calc(50% - 4px)`
-                          : props.message.length > 3
-                          ? `calc(${100 / 2}% - 4px)`
-                          : `calc(${100 / props.message.length}% - 4px)`,
+                          : `calc(${100 / 3}% - 4px)`,
                     }}
                   >
                     <img key={img} src={img} />

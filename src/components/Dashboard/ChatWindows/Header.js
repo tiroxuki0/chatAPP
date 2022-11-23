@@ -12,6 +12,7 @@ import useModal from "../../../hooks/useModal";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import { useDispatch, useSelector } from "react-redux";
 import { setStateChatWindows } from "../../../redux/authSlice";
+import { default_avatar } from "../../../assets/imgs";
 
 const HeaderWrapper = styledd(Paper)`
   display: flex;
@@ -69,10 +70,7 @@ const HeaderRight = styledd.div`
 `;
 
 const AvatarGroupStyled = styledd(AvatarGroup)`
-  .MuiAvatarGroup-avatar {
-    width: 30px;
-    height: 30px;
-  }
+  
 `;
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -162,11 +160,21 @@ const WindowsHeader = () => {
                 size="large"
               />
             ) : (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
-                size="large"
-              />
+              <>
+                {roomSelected.photoURL ? (
+                  <Avatar
+                    alt={roomSelected.displayName}
+                    src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
+                    size="large"
+                  />
+                ) : (
+                  <Avatar
+                    alt={roomSelected.displayName}
+                    src={default_avatar}
+                    size="large"
+                  />
+                )}
+              </>
             )}
           </>
         ) : (
@@ -216,12 +224,23 @@ const WindowsHeader = () => {
                 );
               } else {
                 avatar = (
-                  <Avatar
-                    key={user.displayName}
-                    alt={user.displayName}
-                    src={`data:image/svg+xml;base64,${user.photoURL}`}
-                    size="large"
-                  />
+                  <>
+                    {user.photoURL ? (
+                      <Avatar
+                        key={user.displayName}
+                        alt={user.displayName}
+                        src={`data:image/svg+xml;base64,${user.photoURL}`}
+                        size="large"
+                      />
+                    ) : (
+                      <Avatar
+                        key={user.displayName}
+                        alt={user.displayName}
+                        src={default_avatar}
+                        size="large"
+                      />
+                    )}
+                  </>
                 );
               }
               return avatar;
@@ -234,26 +253,3 @@ const WindowsHeader = () => {
 };
 
 export default React.memo(WindowsHeader);
-
-{
-  /* <StyledBadge
-            overlap="circular"
-            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            variant="dot"
-            sx={{ mr: 1 }}
-          >
-            {roomSelected.photoURL && roomSelected.photoURL.includes("http") ? (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={roomSelected.photoURL}
-                size="large"
-              />
-            ) : (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
-                size="large"
-              />
-            )}
-          </StyledBadge> */
-}

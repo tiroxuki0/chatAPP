@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setRegisterInfo } from "../../../redux/authSlice";
 import { registerRequest } from "../../../redux/authRequest";
+import { updateUserStatus } from "../../../firebase/services";
 
 export default function SetAvatar() {
   const api = `https://api.multiavatar.com`;
@@ -44,6 +45,7 @@ export default function SetAvatar() {
         ...register,
         photoURL: avatars[selectedAvatar],
       });
+      updateUserStatus();
     }
   };
 
@@ -146,11 +148,11 @@ const Container = styled.div`
       }
     }
     .selected {
-      border: 0.4rem solid #4e0eff;
+      border: 0.4rem solid #4eac6d;
     }
   }
   .submit-btn {
-    background-color: #4e0eff;
+    background-color: #4eac6d;
     color: white;
     padding: 1rem 2rem;
     border: none;
@@ -160,7 +162,7 @@ const Container = styled.div`
     font-size: 1rem;
     text-transform: uppercase;
     &:hover {
-      background-color: #4e0eff;
+      background-color: #4eac6d;
     }
   }
 `;

@@ -1,6 +1,5 @@
 import * as React from "react";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import ForumIcon from "@mui/icons-material/Forum";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
@@ -15,10 +14,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import Menu from "@mui/material/Menu";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import {
@@ -33,7 +29,8 @@ import {
   signInFailed,
 } from "../../redux/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { firebaseSignOut } from "../../firebase/services";
+import { firebaseSignOut, logoutUserStatus } from "../../firebase/services";
+import { default_avatar } from "../../assets/imgs";
 
 const BootstrapTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -124,6 +121,7 @@ export const ListItems = () => {
           break;
         }
         case "/sign-out": {
+          logoutUserStatus(user.uid);
           await firebaseSignOut();
           dispatch(signInFailed());
           dispatch(clearData());
@@ -226,12 +224,23 @@ export const ListItems = () => {
                     className="nav_avatar"
                   />
                 ) : (
-                  <Avatar
-                    alt={user.displayName}
-                    src={`data:image/svg+xml;base64,${user.photoURL}`}
-                    sx={{ width: 40, height: 40 }}
-                    className="nav_avatar"
-                  />
+                  <>
+                    {user.photoURL ? (
+                      <Avatar
+                        alt={user.displayName}
+                        src={`data:image/svg+xml;base64,${user.photoURL}`}
+                        sx={{ width: 40, height: 40 }}
+                        className="nav_avatar"
+                      />
+                    ) : (
+                      <Avatar
+                        alt={user.displayName}
+                        src={default_avatar}
+                        sx={{ width: 40, height: 40 }}
+                        className="nav_avatar"
+                      />
+                    )}
+                  </>
                 )}
               </ListItemIcon>
               <Menu

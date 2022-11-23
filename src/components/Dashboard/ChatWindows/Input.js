@@ -182,72 +182,50 @@ const WindowsInput = () => {
 
   const sendMessage = () => {
     if (selectedImgs.length > 0) {
-      let complete = false;
-      for (let i = 0; i < selectedImgs.length; i++) {
+      /*  */
+      const uploads = selectedImgs.map((item, index) => {
         const storageRef = ref(
           storage,
-          `message/image/${selectedImgs[i].file.name + " " + uuid()}`
+          `message/image/${item.file.name + " " + uuid()}`
         );
 
-        const uploadTask = uploadBytesResumable(
-          storageRef,
-          selectedImgs[i].file
-        );
+        const uploadTask = uploadBytesResumable(storageRef, item.file);
 
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-          },
-          (error) => {
-            switch (error.code) {
-              case "storage/unauthorized":
-                console.log({ error, message: "storage/unauthorized" });
-                break;
-              case "storage/canceled":
-                console.log({ error, message: "storage/canceled" });
-                break;
-              case "storage/unknown":
-                console.log({ error, message: "storage/unknown" });
-                break;
-            }
-          },
-          async () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              urls.current = [...urls.current, downloadURL];
-              if (urls.current.length === selectedImgs.length) {
-                complete = true;
-              }
-              if (complete) {
-                addDocument("messages", {
-                  type: "image",
-                  text: urls.current,
-                  uid: user.uid,
-                  displayName: user.displayName,
-                  photoURL: user.photoURL,
-                  roomId: roomSelected.id,
-                  seen: [],
-                });
-                if (message.trim()) {
-                  addDocument("messages", {
-                    type: "text",
-                    text: message,
-                    uid: user.uid,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    roomId: roomSelected.id,
-                    seen: [],
-                  });
-                  setMessage("");
-                }
-              }
+        return uploadTask;
+      });
+
+      Promise.all(uploads).then(function (values) {
+        const urls = [];
+        values.forEach((upload) => {
+          const url = getDownloadURL(upload.task.snapshot.ref);
+          urls.push(url);
+        });
+        Promise.all(urls).then(function (values) {
+          console.log(values);
+          addDocument("messages", {
+            type: "image",
+            text: values,
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            roomId: roomSelected.id,
+            seen: [],
+          });
+          if (message.trim()) {
+            addDocument("messages", {
+              type: "text",
+              text: message,
+              uid: user.uid,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              roomId: roomSelected.id,
+              seen: [],
             });
+            setMessage("");
           }
-        );
-      }
+        });
+      });
+      /*  */
     } else {
       if (message.trim()) {
         addDocument("messages", {
@@ -286,22 +264,22 @@ const WindowsInput = () => {
 
   const handleCreateBase64 = React.useCallback(async (e) => {
     const files = e.target.files;
-    if ([...imgsRef.current, ...files].length < 5) {
-      const newFiles = [...files].map((file) => {
-        return { id: uuid(), file };
-      });
-      let imgsBase64 = [];
-      imgsRef.current = [...imgsRef.current, ...newFiles];
-      setSelectedImgs(imgsRef.current);
-      for (let i = 0; i < newFiles.length; i++) {
-        const base64 = await convertToBase64(newFiles[i].file);
-        imgsBase64 = [...imgsBase64, { id: newFiles[i].id, src: base64 }];
-      }
-      setImgs((prev) => [...prev, ...imgsBase64]);
-      e.target.value = "";
-    } else {
-      toast.info("You can only send 4 images at a time", toastOptions);
+    const newFiles = [...files].map((file) => {
+      return { id: uuid(), file };
+    });
+    let imgsBase64 = [];
+    imgsRef.current = [...imgsRef.current, ...newFiles];
+    setSelectedImgs(imgsRef.current);
+    for (let i = 0; i < newFiles.length; i++) {
+      const base64 = await convertToBase64(newFiles[i].file);
+      imgsBase64 = [...imgsBase64, { id: newFiles[i].id, src: base64 }];
     }
+    setImgs((prev) => [...prev, ...imgsBase64]);
+    e.target.value = "";
+    /* if ([...imgsRef.current, ...files].length < 16) {
+    } else {
+      toast.info("You can only send 15 images at a time", toastOptions);
+    } */
   }, []);
 
   const convertToBase64 = (file) => {
@@ -385,7 +363,7 @@ const WindowsInput = () => {
             id="message_text"
             fullWidth
             maxRows={4}
-            placeholder="Message"
+            placeholder="Message..."
             onChange={(e) => {
               setMessage(e.target.value);
             }}

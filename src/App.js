@@ -13,6 +13,9 @@ import SetAvatar from "./components/SignInContainer/SetAvatar";
 import RequiredAuth from "./components/RequiredAuth";
 import { useDispatch } from "react-redux";
 import { setStateChatWindows, setMobile } from "./redux/authSlice";
+import { setStatus } from "./redux/dataSlice";
+import { onValue, ref } from "firebase/database";
+import { rtdb } from "./firebase/config";
 
 const AlertNotSupported = styled.div`
   width: 100vw;
@@ -37,6 +40,24 @@ function App() {
       dispatch(setMobile(true));
     }
   }, [windowSize]);
+
+  const getStatus = () => {
+    const statusRef = ref(rtdb, "status");
+    onValue(statusRef, (snapshot) => {
+      console.log("status update");
+      const data = snapshot.val();
+      const array = data
+        ? Object.keys(data).map((key) => {
+            return { ...data[key], uid: key };
+          })
+        : [];
+      dispatch(setStatus(array));
+    });
+  };
+
+  React.useEffect(() => {
+    getStatus();
+  }, []);
 
   return (
     <>

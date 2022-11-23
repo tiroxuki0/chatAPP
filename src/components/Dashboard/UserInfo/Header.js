@@ -83,12 +83,12 @@ const Container = styledd.div`
         transition: 0.5s ease-in-out;
       }
       &.selected {
-        border: 0.2rem solid #4e0eff;
+        border: 0.2rem solid #4eac6d;
       }
     }
   }
   .submit-btn {
-    background-color: #4e0eff;
+    background-color: #4eac6d;
     color: white;
     padding: 1rem 2rem;
     border: none;
@@ -98,7 +98,7 @@ const Container = styledd.div`
     font-size: 1rem;
     text-transform: uppercase;
     &:hover {
-      background-color: #4e0eff;
+      background-color: #4eac6d;
     }
   }
 `;
@@ -425,7 +425,9 @@ const ListHeader = () => {
         {editAvatar && (
           <Container style={{ background: theme ? "white" : "#262626" }}>
             {loading ? (
-              "Please wait..."
+              <p style={{ color: theme ? "#495057" : "#edf7f0" }}>
+                Please wait...
+              </p>
             ) : (
               <div className="avatars">
                 {avatars.map((avatar, index) => {

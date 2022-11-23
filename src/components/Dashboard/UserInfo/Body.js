@@ -16,6 +16,12 @@ import Typography from "@mui/material/Typography";
 import { useSelector, useDispatch } from "react-redux";
 import { checkExist, updateDocument } from "../../../firebase/services";
 import { signInSuccess } from "../../../redux/authSlice";
+import {
+  signInWithEmailAndPassword,
+  updateEmail,
+  updatePassword,
+} from "firebase/auth";
+import { auth } from "../../../firebase/config";
 
 const BoxStyled = styledd(Box)`
   overflow: hidden auto;
@@ -123,30 +129,107 @@ function CustomizedList() {
     setIsName(true);
     setIsEmail(true);
     setIsPassword(true);
-    console.log({ displayName: name, email, password });
     const { id, ...remaining } = user;
-    if (
-      name !== user.displayName ||
-      email !== user.email ||
-      password !== user.password
-    ) {
-      dispatch(signInSuccess({ ...user, displayName: name, email, password }));
-      const res = await updateDocument(
-        "users",
-        {
-          ...remaining,
-          displayName: name,
-          email,
-          password,
-        },
-        user.id
-      );
-      if (res.code == 0) {
-        toast.error("Update failed", toastOptions);
-      } else {
-        toast.success("Update success", toastOptions);
-      }
+    updateDocument(
+      "users",
+      {
+        ...remaining,
+        displayName: name,
+        email,
+        password,
+      },
+      user.id
+    );
+    if (user.password !== password && user.email !== email) {
+      await updateEmail(auth.currentUser, email)
+        .then(async () => {
+          // Email updated!
+          console.log("Email updated");
+        })
+        .catch((error) => {
+          console.log(error);
+          // An error occurred
+          // ...
+        });
+      await updatePassword(auth.currentUser, password)
+        .then(() => {
+          // Password updated!
+          console.log("Password updated");
+          toast.success("Email and Password updated!", {
+            ...toastOptions,
+            position: "bottom-left",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          // An error occurred
+          // ...
+        });
+      await signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          console.log("Re-SignIn");
+
+          /*  */
+        })
+        .catch((error) => {
+          return { code: 0, message: "Signin failed!", error };
+        });
+    } else if (user.password !== password) {
+      await updatePassword(auth.currentUser, password)
+        .then(() => {
+          // Password updated!
+          console.log("Password updated");
+          toast.success("Password updated!", {
+            ...toastOptions,
+            position: "bottom-left",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          // An error occurred
+        });
+      await signInWithEmailAndPassword(auth, user.email, password)
+        .then((userCredential) => {
+          // Signed in
+          console.log("Re-SignIn");
+
+          /*  */
+        })
+        .catch((error) => {
+          return { code: 0, message: "Signin failed!", error };
+        });
+    } else if (user.email !== email) {
+      await updateEmail(auth.currentUser, email)
+        .then(async () => {
+          // Email updated!
+          console.log("Email updated");
+          toast.success("Email updated!", {
+            ...toastOptions,
+            position: "bottom-left",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          // An error occurred
+        });
+      await signInWithEmailAndPassword(auth, email, user.password)
+        .then((userCredential) => {
+          // Signed in
+          console.log("Re-SignIn");
+
+          /*  */
+        })
+        .catch((error) => {
+          return { code: 0, message: "Signin failed!", error };
+        });
+    } else if (user.username !== name) {
+      toast.success("Username updated!", {
+        ...toastOptions,
+        position: "bottom-left",
+      });
     }
+    dispatch(signInSuccess({ ...user, displayName: name, email, password }));
   };
 
   const handleChangeName = () => {
@@ -199,7 +282,7 @@ function CustomizedList() {
                     fontSize: 15,
                     fontWeight: "700",
                     lineHeight: "20px",
-                    color: "rgba(255, 255, 255, 0.5)",
+                    color: !theme ? "rgba(255, 255, 255, 0.5)" : "#797c8c",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "left",
@@ -210,7 +293,7 @@ function CustomizedList() {
                     sx={{
                       width: 16,
                       height: 16,
-                      color: "rgba(255, 255, 255, 0.5)",
+                      color: !theme ? "rgba(255, 255, 255, 0.5)" : "#797c8c",
                     }}
                   />
                   Personal Info

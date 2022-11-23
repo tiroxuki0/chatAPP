@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   usersDisplay: [],
+  status: [],
   users: [],
   rooms: [],
   search: "",
@@ -18,6 +19,9 @@ export const dataSlice = createSlice({
   reducers: {
     setUsersDisplay: (state, action) => {
       state.usersDisplay = action.payload;
+    },
+    setStatus: (state, action) => {
+      state.status = action.payload;
     },
     setMessages: (state, action) => {
       state.messages = action.payload;
@@ -67,6 +71,7 @@ export const {
   setRooms,
   setRoomSelected,
   setUsers,
+  setStatus,
   clearData,
   updateMember,
   getDataStart,
