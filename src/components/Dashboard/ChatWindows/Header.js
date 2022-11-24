@@ -73,7 +73,25 @@ const AvatarGroupStyled = styledd(AvatarGroup)`
   
 `;
 
-const StyledBadge = styled(Badge)(({ theme }) => ({
+const StyledBadgeOff = styled(Badge)(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    backgroundColor: "silver",
+    color: "silver",
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    "&::after": {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      border: "1px solid currentColor",
+      content: '""',
+    },
+  },
+}));
+
+const StyledBadgeOnl = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     backgroundColor: "#44b700",
     color: "#44b700",
@@ -106,6 +124,8 @@ const WindowsHeader = () => {
   const dispatch = useDispatch();
   const [usersInRoom, setUsersInRoom] = React.useState([]);
   const theme = useSelector((state) => state.auth.theme);
+  const user = useSelector((state) => state.auth.user);
+  const status = useSelector((state) => state.data.status);
   const roomSelected = useSelector((state) => state.data.roomSelected);
   const chatWindows = useSelector((state) => state.auth.chatWindows);
   const rooms = useSelector((state) => state.data.rooms);
@@ -153,28 +173,72 @@ const WindowsHeader = () => {
         </Mobile>
         {roomSelected.private == true ? (
           <>
-            {roomSelected.photoURL && roomSelected.photoURL.includes("http") ? (
-              <Avatar
-                alt={roomSelected.displayName}
-                src={roomSelected.photoURL}
-                size="large"
-              />
-            ) : (
-              <>
-                {roomSelected.photoURL ? (
+            {status.find(
+              (e) =>
+                e.uid ===
+                roomSelected.members.filter((memID) => memID !== user.uid)[0]
+            ).state === "online" ? (
+              <StyledBadgeOnl
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                variant="dot"
+              >
+                {roomSelected.photoURL &&
+                roomSelected.photoURL.includes("http") ? (
                   <Avatar
                     alt={roomSelected.displayName}
-                    src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
+                    src={roomSelected.photoURL}
                     size="large"
                   />
                 ) : (
+                  <>
+                    {roomSelected.photoURL ? (
+                      <Avatar
+                        alt={roomSelected.displayName}
+                        src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
+                        size="large"
+                      />
+                    ) : (
+                      <Avatar
+                        alt={roomSelected.displayName}
+                        src={default_avatar}
+                        size="large"
+                      />
+                    )}
+                  </>
+                )}
+              </StyledBadgeOnl>
+            ) : (
+              <StyledBadgeOff
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                variant="dot"
+              >
+                {roomSelected.photoURL &&
+                roomSelected.photoURL.includes("http") ? (
                   <Avatar
                     alt={roomSelected.displayName}
-                    src={default_avatar}
+                    src={roomSelected.photoURL}
                     size="large"
                   />
+                ) : (
+                  <>
+                    {roomSelected.photoURL ? (
+                      <Avatar
+                        alt={roomSelected.displayName}
+                        src={`data:image/svg+xml;base64,${roomSelected.photoURL}`}
+                        size="large"
+                      />
+                    ) : (
+                      <Avatar
+                        alt={roomSelected.displayName}
+                        src={default_avatar}
+                        size="large"
+                      />
+                    )}
+                  </>
                 )}
-              </>
+              </StyledBadgeOff>
             )}
           </>
         ) : (
