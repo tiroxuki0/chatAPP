@@ -84,7 +84,7 @@ const ListBottom = styledd.div`
     }
   }
   @media only screen and (max-width: 400px) {
-    margin-bottom: 20px;
+    margin-bottom: 50px;
   }
 `;
 
