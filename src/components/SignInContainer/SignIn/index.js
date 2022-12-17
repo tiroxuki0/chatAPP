@@ -144,13 +144,13 @@ export default React.memo(function SignIn({ toastNoti }) {
                 alt="google icon"
               />
             </Button>
-            <Button onClick={handleFBSignIn} sx={{ minWidth: 30 }}>
+            {/* <Button onClick={handleFBSignIn} sx={{ minWidth: 30 }}>
               <img
                 src="https://img.icons8.com/color/48/000000/facebook-new.png"
                 style={{ width: "35px", height: "35px" }}
                 alt="facebook icon"
               />
-            </Button>
+            </Button> */}
           </Grid>
           <Grid item xs={12}>
             {"Don't have an account? "}
