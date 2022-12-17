@@ -56,6 +56,15 @@
 .MuiList-root .MuiMenuItem-root:last-child {
   padding-bottom: 14px !important;
 }
+.MuiBackdrop-root {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+.MuiPopover-root {
+  width: 100vw;
+  height: 100vh;
+  margin-top: 0 !important;
+}
 
 @media screen and (max-width: 600px) {
   .feed_header_left_arrow {

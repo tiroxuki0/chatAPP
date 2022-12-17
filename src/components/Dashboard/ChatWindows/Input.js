@@ -24,9 +24,6 @@ const Wrapper = styled.div`
   height: auto;
   padding: 6px 15px;
   border-radius: 0px 0px 6px 6px;
-  @media only screen and (max-width: 400px) {
-    padding: 0px 2px;
-  }
 `;
 
 const Preview = styled.div`
