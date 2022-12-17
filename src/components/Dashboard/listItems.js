@@ -83,6 +83,9 @@ const ListBottom = styledd.div`
       margin-left: 0px;
     }
   }
+  @media only screen and (max-width: 400px) {
+    margin-bottom: 20px;
+  }
 `;
 
 const MenuItemStyled = styledd(MenuItem)`
