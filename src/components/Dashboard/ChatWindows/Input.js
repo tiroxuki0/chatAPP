@@ -1,20 +1,20 @@
-import React from "react";
-import styled from "styled-components";
-import TextareaAutosize from "@mui/material/TextareaAutosize";
-import Button from "@mui/material/Button";
-import SendIcon from "@mui/icons-material/Send";
-import Container from "@mui/material/Container";
-import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
-import CancelIcon from "@mui/icons-material/Cancel";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
-import { ToastContainer, toast } from "react-toastify";
-import { addDocument } from "../../../firebase/services";
-import { useSelector } from "react-redux";
-import { v4 as uuid } from "uuid";
-import { storage } from "../../../firebase/config";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import React from "react"
+import styled from "styled-components"
+import TextareaAutosize from "@mui/material/TextareaAutosize"
+import Button from "@mui/material/Button"
+import SendIcon from "@mui/icons-material/Send"
+import Container from "@mui/material/Container"
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt"
+import CancelIcon from "@mui/icons-material/Cancel"
+import AttachFileIcon from "@mui/icons-material/AttachFile"
+import data from "@emoji-mart/data"
+import Picker from "@emoji-mart/react"
+import { ToastContainer, toast } from "react-toastify"
+import { addDocument } from "../../../firebase/services"
+import { useSelector } from "react-redux"
+import { v4 as uuid } from "uuid"
+import { storage } from "../../../firebase/config"
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 
 const Wrapper = styled.div`
   position: absolute;
@@ -24,7 +24,7 @@ const Wrapper = styled.div`
   height: auto;
   padding: 6px 15px;
   border-radius: 0px 0px 6px 6px;
-`;
+`
 
 const Preview = styled.div`
   position: absolute;
@@ -72,13 +72,14 @@ const Preview = styled.div`
     transform: translate(50%, -50%);
     padding: 0;
   }
-`;
+`
 
 const ContainerInput = styled(Container)`
   height: 100%;
-`;
+`
 
 const FormStyled = styled.form`
+  width: 100%;
   position: relative;
   display: flex !important;
   align-items: center;
@@ -98,7 +99,7 @@ const FormStyled = styled.form`
       padding: 12px 0px;
     }
   }
-`;
+`
 
 const TextareaAutosizeStyled = styled(TextareaAutosize)`
   width: 100%;
@@ -109,7 +110,7 @@ const TextareaAutosizeStyled = styled(TextareaAutosize)`
   background: transparent;
   padding: 16.5px 0;
   color: #797c8c;
-`;
+`
 
 const PickerWrapper = styled.div`
   position: absolute;
@@ -138,67 +139,64 @@ const PickerWrapper = styled.div`
     height: 15px;
     background: transparent;
   }
-`;
+`
 
 const WindowsInput = () => {
-  const user = useSelector((state) => state.auth.user);
-  const theme = useSelector((state) => state.auth.theme);
-  const roomSelected = useSelector((state) => state.data.roomSelected);
-  const btnPickerRef = React.useRef(null);
-  const pickerRef = React.useRef(null);
-  const [message, setMessage] = React.useState("");
-  const [selectedImgs, setSelectedImgs] = React.useState([]);
-  const [imgs, setImgs] = React.useState([]);
-  const imgsRef = React.useRef([]);
-  const urls = React.useRef([]);
+  const user = useSelector((state) => state.auth.user)
+  const theme = useSelector((state) => state.auth.theme)
+  const roomSelected = useSelector((state) => state.data.roomSelected)
+  const btnPickerRef = React.useRef(null)
+  const pickerRef = React.useRef(null)
+  const [message, setMessage] = React.useState("")
+  const [selectedImgs, setSelectedImgs] = React.useState([])
+  const [imgs, setImgs] = React.useState([])
+  const imgsRef = React.useRef([])
+  const urls = React.useRef([])
 
   const toastOptions = {
     position: "top-center",
     autoClose: 1000,
     pauseOnHover: true,
     draggable: true,
-    theme: theme ? "light" : "dark",
-  };
+    theme: theme ? "light" : "dark"
+  }
 
   React.useEffect(() => {
     btnPickerRef.current.addEventListener("mouseover", () => {
-      pickerRef.current.classList.add("enable");
-    });
+      pickerRef.current.classList.add("enable")
+    })
     pickerRef.current.addEventListener("mouseover", (e) => {
-      e.currentTarget.classList.add("enable");
-    });
+      e.currentTarget.classList.add("enable")
+    })
 
     btnPickerRef.current.addEventListener("mouseleave", () => {
-      pickerRef.current.classList.remove("enable");
-    });
+      pickerRef.current.classList.remove("enable")
+    })
 
     pickerRef.current.addEventListener("mouseleave", (e) => {
-      e.currentTarget.classList.remove("enable");
-    });
-  }, []);
+      e.currentTarget.classList.remove("enable")
+    })
+  }, [])
 
   const sendMessage = () => {
     if (selectedImgs.length > 0) {
       /*  */
       const uploads = selectedImgs.map((item, index) => {
-        const storageRef = ref(
-          storage,
-          `message/image/${item.file.name + " " + uuid()}`
-        );
+        const storageRef = ref(storage, `message/image/${item.file.name + " " + uuid()}`)
 
-        const uploadTask = uploadBytesResumable(storageRef, item.file);
+        const uploadTask = uploadBytesResumable(storageRef, item.file)
 
-        return uploadTask;
-      });
+        return uploadTask
+      })
 
       Promise.all(uploads).then(function (values) {
-        const urls = [];
+        const urls = []
         values.forEach((upload) => {
-          const url = getDownloadURL(upload.task.snapshot.ref);
-          urls.push(url);
-        });
+          const url = getDownloadURL(upload.task.snapshot.ref)
+          urls.push(url)
+        })
         Promise.all(urls).then(function (values) {
-          console.log(values);
+          console.log(values)
           addDocument("messages", {
             type: "image",
             text: values,
@@ -206,8 +204,8 @@ const WindowsInput = () => {
             displayName: user.displayName,
             photoURL: user.photoURL,
             roomId: roomSelected.id,
-            seen: [],
-          });
+            seen: []
+          })
           if (message.trim()) {
             addDocument("messages", {
               type: "text",
@@ -216,12 +214,12 @@ const WindowsInput = () => {
               displayName: user.displayName,
               photoURL: user.photoURL,
               roomId: roomSelected.id,
-              seen: [],
-            });
-            setMessage("");
+              seen: []
+            })
+            setMessage("")
           }
-        });
-      });
+        })
+      })
       /*  */
     } else {
       if (message.trim()) {
@@ -232,81 +230,81 @@ const WindowsInput = () => {
           displayName: user.displayName,
           photoURL: user.photoURL,
           roomId: roomSelected.id,
-          seen: [],
-        });
-        setMessage("");
+          seen: []
+        })
+        setMessage("")
       }
     }
-    setSelectedImgs([]);
-    setImgs([]);
-    imgsRef.current = [];
-    urls.current = [];
-  };
+    setSelectedImgs([])
+    setImgs([])
+    imgsRef.current = []
+    urls.current = []
+  }
 
   const handleEmojiSelect = (emoji) => {
-    setMessage((prev) => prev + emoji.native);
-  };
+    setMessage((prev) => prev + emoji.native)
+  }
 
   const onEnterPress = (e) => {
     if (e.keyCode == 13 && e.shiftKey == false) {
-      e.preventDefault();
-      sendMessage();
+      e.preventDefault()
+      sendMessage()
     }
-  };
+  }
 
   const handleSendMessage = async (e) => {
-    e.preventDefault();
-    sendMessage();
-  };
+    e.preventDefault()
+    sendMessage()
+  }
 
   const handleCreateBase64 = React.useCallback(async (e) => {
-    const files = e.target.files;
+    const files = e.target.files
     const newFiles = [...files].map((file) => {
-      return { id: uuid(), file };
-    });
-    let imgsBase64 = [];
-    imgsRef.current = [...imgsRef.current, ...newFiles];
-    setSelectedImgs(imgsRef.current);
+      return { id: uuid(), file }
+    })
+    let imgsBase64 = []
+    imgsRef.current = [...imgsRef.current, ...newFiles]
+    setSelectedImgs(imgsRef.current)
     for (let i = 0; i < newFiles.length; i++) {
-      const base64 = await convertToBase64(newFiles[i].file);
-      imgsBase64 = [...imgsBase64, { id: newFiles[i].id, src: base64 }];
+      const base64 = await convertToBase64(newFiles[i].file)
+      imgsBase64 = [...imgsBase64, { id: newFiles[i].id, src: base64 }]
     }
-    setImgs((prev) => [...prev, ...imgsBase64]);
-    e.target.value = "";
+    setImgs((prev) => [...prev, ...imgsBase64])
+    e.target.value = ""
     /* if ([...imgsRef.current, ...files].length < 16) {
     } else {
       toast.info("You can only send 15 images at a time", toastOptions);
     } */
-  }, []);
+  }, [])
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
+      const fileReader = new FileReader()
       if (!file) {
-        alert("Please select an image");
+        alert("Please select an image")
       } else {
-        fileReader.readAsDataURL(file);
+        fileReader.readAsDataURL(file)
         fileReader.onload = () => {
-          resolve(fileReader.result);
-        };
+          resolve(fileReader.result)
+        }
       }
       fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  };
+        reject(error)
+      }
+    })
+  }
 
   const deleteImage = (img) => {
-    imgsRef.current = imgsRef.current.filter((e) => e.id !== img.id);
-    setSelectedImgs(imgsRef.current);
-    setImgs((prev) => prev.filter((e) => e.id !== img.id));
-  };
+    imgsRef.current = imgsRef.current.filter((e) => e.id !== img.id)
+    setSelectedImgs(imgsRef.current)
+    setImgs((prev) => prev.filter((e) => e.id !== img.id))
+  }
 
   return (
     <Wrapper
       style={{
         background: theme ? "#ededed" : "#2e2e2e",
-        borderTop: theme ? "1px solid #d5d5d5" : "1px solid #333",
+        borderTop: theme ? "1px solid #d5d5d5" : "1px solid #333"
       }}
     >
       {imgs.length > 0 && (
@@ -321,39 +319,29 @@ const WindowsInput = () => {
                       color: "#797c8c",
                       width: 25,
                       height: 25,
-                      cursor: "pointer",
+                      cursor: "pointer"
                     }}
                     onClick={() => deleteImage(img)}
                   />
                   <img className="picture" src={img.src} alt="logo" />
                 </div>
-              );
+              )
             })}
           </div>
         </Preview>
       )}
-      <ContainerInput disableGutters>
+      <ContainerInput maxWidth="xxl" disableGutters>
         <FormStyled onSubmit={handleSendMessage}>
-          <Button
-            sx={{ minWidth: 20 }}
-            aria-label="upload picture"
-            component="label"
-          >
+          <Button sx={{ minWidth: 20 }} aria-label="upload picture" component="label">
             <AttachFileIcon
               sx={{
                 color: "#797c8c",
                 width: 25,
                 height: 25,
-                transform: "rotate(45deg)",
+                transform: "rotate(45deg)"
               }}
             />
-            <input
-              hidden
-              accept="image/*, png, jpg, jpeg"
-              type="file"
-              multiple
-              onChange={handleCreateBase64}
-            />
+            <input hidden accept="image/*, png, jpg, jpeg" type="file" multiple onChange={handleCreateBase64} />
           </Button>
           <TextareaAutosizeStyled
             className="input_area"
@@ -362,15 +350,13 @@ const WindowsInput = () => {
             maxRows={4}
             placeholder="Message..."
             onChange={(e) => {
-              setMessage(e.target.value);
+              setMessage(e.target.value)
             }}
             onKeyDown={onEnterPress}
             value={message}
           />
           <Button ref={btnPickerRef} sx={{ minWidth: 20 }}>
-            <SentimentSatisfiedAltIcon
-              sx={{ color: "#797c8c", width: 25, height: 25 }}
-            />
+            <SentimentSatisfiedAltIcon sx={{ color: "#797c8c", width: 25, height: 25 }} />
           </Button>
           <PickerWrapper ref={pickerRef}>
             <Picker
@@ -391,7 +377,7 @@ const WindowsInput = () => {
       </ContainerInput>
       <ToastContainer />
     </Wrapper>
-  );
-};
+  )
+}
 
-export default React.memo(WindowsInput);
+export default React.memo(WindowsInput)

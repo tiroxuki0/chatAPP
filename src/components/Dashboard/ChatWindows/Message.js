@@ -1,11 +1,11 @@
-import React from "react";
-import Avatar from "@mui/material/Avatar";
-import styled from "styled-components";
-import Paper from "@mui/material/Paper";
-import { formatRelative } from "date-fns";
-import { useSelector } from "react-redux";
-import clsx from "clsx";
-import { default_avatar } from "../../../assets/imgs";
+import React from "react"
+import Avatar from "@mui/material/Avatar"
+import styled from "styled-components"
+import Paper from "@mui/material/Paper"
+import { formatRelative } from "date-fns"
+import { useSelector } from "react-redux"
+import clsx from "clsx"
+import { default_avatar } from "../../../assets/imgs"
 
 const Wrapper = styled.div`
   max-width: 100%;
@@ -21,7 +21,7 @@ const Wrapper = styled.div`
     opacity: 0;
     visibility: hidden;
   }
-`;
+`
 
 const MessageWrapper = styled.div`
   width: 75%;
@@ -37,7 +37,7 @@ const MessageWrapper = styled.div`
   justify-content: flex-start;
   flex-direction: column;
   gap: 4px;
-`;
+`
 
 const ImageArrayStyled = styled.div`
   display: flex;
@@ -62,7 +62,7 @@ const ImageArrayStyled = styled.div`
       border-radius: 4px;
     }
   }
-`;
+`
 
 const MessageStyled = styled(Paper)`
   word-wrap: break-word;
@@ -114,7 +114,7 @@ const MessageStyled = styled(Paper)`
   @media only screen and (max-width: 900px) {
     max-width: 80%;
   }
-`;
+`
 
 const SeenDiv = styled.div`
   margin-top: -2px;
@@ -129,30 +129,25 @@ const SeenDiv = styled.div`
   &.right {
     justify-content: flex-end;
   }
-`;
+`
 
 const Message = (props) => {
-  const theme = useSelector((state) => state.auth.theme);
+  const theme = useSelector((state) => state.auth.theme)
   const formatDate = (seconds) => {
-    let formated = "";
+    let formated = ""
     if (seconds) {
-      formated = formatRelative(new Date(seconds * 1000), new Date());
-      formated = formated.charAt(0).toUpperCase() + formated.slice(1);
-      formated = formated.split("at")[formated.split("at").length - 1];
+      formated = formatRelative(new Date(seconds * 1000), new Date())
+      formated = formated.charAt(0).toUpperCase() + formated.slice(1)
+      formated = formated.split("at")[formated.split("at").length - 1]
     }
 
-    return formated;
-  };
+    return formated
+  }
 
   return (
     <Wrapper className={props.side}>
       {props.photoURL && props.photoURL.includes("http") ? (
-        <Avatar
-          alt={props.username}
-          src={props.photoURL}
-          sx={{ width: 30, height: 30 }}
-          className={props.photoURL !== "hidden" ? "visible" : "hidden"}
-        />
+        <Avatar alt={props.username} src={props.photoURL} sx={{ width: 30, height: 30 }} className={props.photoURL !== "hidden" ? "visible" : "hidden"} />
       ) : (
         <>
           {props.photoURL ? (
@@ -163,47 +158,19 @@ const Message = (props) => {
               className={props.photoURL !== "hidden" ? "visible" : "hidden"}
             />
           ) : (
-            <Avatar
-              alt={props.username}
-              src={default_avatar}
-              sx={{ width: 30, height: 30 }}
-              className={props.photoURL !== "hidden" ? "visible" : "hidden"}
-            />
+            <Avatar alt={props.username} src={default_avatar} sx={{ width: 30, height: 30 }} className={props.photoURL !== "hidden" ? "visible" : "hidden"} />
           )}
         </>
       )}
-      <MessageWrapper
-        className={clsx(
-          "message_wrapper",
-          props.side,
-          !props.username ? "welcome" : "",
-          theme ? "light" : "dark"
-        )}
-      >
+      <MessageWrapper className={clsx("message_wrapper", props.side, !props.username ? "welcome" : "", theme ? "light" : "dark")}>
         {props.type === "text" ? (
-          <MessageStyled
-            className={clsx(
-              props.side,
-              !props.username ? "welcome" : "",
-              theme ? "light" : "dark"
-            )}
-            elevation={2}
-          >
+          <MessageStyled className={clsx(props.side, !props.username ? "welcome" : "", theme ? "light" : "dark")} elevation={2}>
             <p style={{ margin: 0 }}>{props.message}</p>
-            {props.username && (
-              <p className="createdTime">
-                {formatDate(props.createdAt?.seconds)
-                  ? formatDate(props.createdAt?.seconds)
-                  : "........"}
-              </p>
-            )}
+            {props.username && <p className="createdTime">{formatDate(props.createdAt?.seconds) ? formatDate(props.createdAt?.seconds) : "........"}</p>}
           </MessageStyled>
         ) : (
           <>
-            <ImageArrayStyled
-              className={clsx(props.side, "message_image")}
-              style={{ display: "flex" }}
-            >
+            <ImageArrayStyled className={clsx(props.side, "message_image")} style={{ display: "flex" }}>
               {props.message.map((img, index) => {
                 return (
                   <a
@@ -211,15 +178,12 @@ const Message = (props) => {
                     data-fancybox="gallery"
                     href={img}
                     style={{
-                      width:
-                        props.message.length === 1
-                          ? `calc(50% - 4px)`
-                          : `calc(${100 / 3}% - 4px)`,
+                      width: props.message.length === 1 ? `calc(50% - 4px)` : `calc(${100 / 3}% - 4px)`
                     }}
                   >
                     <img key={img} src={img} />
                   </a>
-                );
+                )
               })}
             </ImageArrayStyled>
             {props.username && (
@@ -228,12 +192,10 @@ const Message = (props) => {
                 style={{
                   margin: "0",
                   fontSize: "12px",
-                  color: "#797c8c",
+                  color: "#797c8c"
                 }}
               >
-                {formatDate(props.createdAt?.seconds)
-                  ? formatDate(props.createdAt?.seconds)
-                  : "........"}
+                {formatDate(props.createdAt?.seconds) ? formatDate(props.createdAt?.seconds) : "........"}
               </p>
             )}
           </>
@@ -256,7 +218,7 @@ const Message = (props) => {
         )} */}
       </MessageWrapper>
     </Wrapper>
-  );
-};
+  )
+}
 
-export default React.memo(Message);
+export default React.memo(Message)
