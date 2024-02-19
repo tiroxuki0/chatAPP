@@ -1,29 +1,21 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Badge from "@mui/material/Badge";
-import { styled, ThemeProvider, createTheme } from "@mui/material/styles";
-import styledd from "styled-components";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Paper from "@mui/material/Paper";
-import Avatar from "@mui/material/Avatar";
-import { formatRelative } from "date-fns";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  usersRemaining,
-  usersDisplayRemaining,
-} from "../../../redux/selectors";
-import { setStateChatWindows } from "../../../redux/authSlice";
-import {
-  getDataStart,
-  getDataSuccess,
-  setRoomSelected,
-  setUsersDisplay,
-} from "../../../redux/dataSlice";
-import * as firebaseServices from "../../../firebase/services";
-import { default_avatar } from "../../../assets/imgs";
+import * as React from "react"
+import Box from "@mui/material/Box"
+import Badge from "@mui/material/Badge"
+import { styled, ThemeProvider, createTheme } from "@mui/material/styles"
+import styledd from "styled-components"
+import List from "@mui/material/List"
+import ListItemButton from "@mui/material/ListItemButton"
+import ListItemIcon from "@mui/material/ListItemIcon"
+import ListItemText from "@mui/material/ListItemText"
+import Paper from "@mui/material/Paper"
+import Avatar from "@mui/material/Avatar"
+import { formatRelative } from "date-fns"
+import { useSelector, useDispatch } from "react-redux"
+import { usersRemaining, usersDisplayRemaining } from "../../../redux/selectors"
+import { setStateChatWindows } from "../../../redux/authSlice"
+import { getDataStart, getDataSuccess, setRoomSelected, setUsersDisplay } from "../../../redux/dataSlice"
+import * as firebaseServices from "../../../firebase/services"
+import { default_avatar } from "../../../assets/imgs"
 
 const BoxStyled = styledd(Box)`
   overflow: hidden auto;
@@ -58,8 +50,9 @@ const BoxStyled = styledd(Box)`
     right: 0;
     top: 3px;
     margin: 0;
+    
   }
-`;
+`
 
 const ListItemTextStyled = styledd(ListItemText)`
   display: -webkit-box;
@@ -69,21 +62,21 @@ const ListItemTextStyled = styledd(ListItemText)`
   text-overflow: ellipsis;
   word-break: break-word;
   margin: 0;
-`;
+`
 
 const FireNav = styled(List)({
   "& .MuiListItemButton-root": {
     paddingLeft: 24,
-    paddingRight: 24,
+    paddingRight: 24
   },
   "& .MuiListItemIcon-root": {
     minWidth: 0,
-    marginRight: 10,
+    marginRight: 10
   },
   "& .MuiSvgIcon-root": {
-    fontSize: 20,
-  },
-});
+    fontSize: 20
+  }
+})
 
 const StyledBadgeOff = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -98,10 +91,10 @@ const StyledBadgeOff = styled(Badge)(({ theme }) => ({
       height: "100%",
       borderRadius: "50%",
       border: "1px solid currentColor",
-      content: '""',
-    },
-  },
-}));
+      content: '""'
+    }
+  }
+}))
 
 const StyledBadgeOnl = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -117,133 +110,111 @@ const StyledBadgeOnl = styled(Badge)(({ theme }) => ({
       borderRadius: "50%",
       animation: "ripple 1.2s infinite ease-in-out",
       border: "1px solid currentColor",
-      content: '""',
-    },
+      content: '""'
+    }
   },
   "@keyframes ripple": {
     "0%": {
       transform: "scale(.8)",
-      opacity: 1,
+      opacity: 1
     },
     "100%": {
       transform: "scale(2)",
-      opacity: 0,
-    },
-  },
-}));
+      opacity: 0
+    }
+  }
+}))
 
 function CustomizedList() {
-  const dispatch = useDispatch();
-  const users = useSelector(usersRemaining);
-  const usersDisplay = useSelector(usersDisplayRemaining);
-  const theme = useSelector((state) => state.auth.theme);
-  const user = useSelector((state) => state.auth.user);
-  const statusData = useSelector((state) => state.data.status);
+  const dispatch = useDispatch()
+  const users = useSelector(usersRemaining)
+  const usersDisplay = useSelector(usersDisplayRemaining)
+  const theme = useSelector((state) => state.auth.theme)
+  const user = useSelector((state) => state.auth.user)
+  const statusData = useSelector((state) => state.data.status)
   // const search = useSelector((state) => state.data.search);
-  const rooms = useSelector((state) => state.data.rooms);
-  const messages = useSelector((state) => state.data.messages);
-  const viewBody = useSelector((state) => state.data.viewBody);
-  const roomSelected = useSelector((state) => state.data.roomSelected);
+  const rooms = useSelector((state) => state.data.rooms)
+  const messages = useSelector((state) => state.data.messages)
+  const viewBody = useSelector((state) => state.data.viewBody)
+  const roomSelected = useSelector((state) => state.data.roomSelected)
 
   const formatDate = (seconds) => {
-    let formated = "";
+    let formated = ""
     if (seconds) {
-      formated = formatRelative(new Date(seconds * 1000), new Date());
+      formated = formatRelative(new Date(seconds * 1000), new Date())
     }
 
-    return formated;
-  };
+    return formated
+  }
 
   const usersListRemaining = async () => {
-    let usersSort = [];
+    let usersSort = []
     if (usersDisplay.length === 0) {
-      const usersFirestore = await firebaseServices.getAllDocs("users");
+      const usersFirestore = await firebaseServices.getAllDocs("users")
       const newUsers = usersFirestore.map((user) => {
-        return { ...user, password: null };
-      });
+        return { ...user, password: null }
+      })
       /* ===================== */
       /* ===================== */
       /* ===================== */
       /* sort user */
       const usersFilted = newUsers.filter((u) => {
-        return user.uid !== u.uid;
-      });
+        return user.uid !== u.uid
+      })
       const usersUpdate = usersFilted.map((u) => {
         const roomFound = rooms.find((room) => {
-          return (
-            room.members.includes(u.uid) &&
-            room.members.includes(user.uid) &&
-            room.private == true
-          );
-        });
-        let second = 0;
+          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+        })
+        let second = 0
         if (roomFound) {
           const messagesRemaining = messages.filter((message) => {
-            return roomFound.id === message.roomId;
-          });
-          if (
-            messagesRemaining.length !== 0 &&
-            messagesRemaining[messagesRemaining.length - 1].uid
-          ) {
-            second =
-              messagesRemaining[messagesRemaining.length - 1]?.createdAt
-                ?.seconds;
+            return roomFound.id === message.roomId
+          })
+          if (messagesRemaining.length !== 0 && messagesRemaining[messagesRemaining.length - 1].uid) {
+            second = messagesRemaining[messagesRemaining.length - 1]?.createdAt?.seconds
           }
         }
         return {
           ...u,
-          second: second === null || second === undefined ? u.second : second,
-        };
-      });
-      usersSort = usersUpdate?.sort(
-        (a, b) => parseFloat(b.second) - parseFloat(a.second)
-      );
+          second: second === null || second === undefined ? u.second : second
+        }
+      })
+      usersSort = usersUpdate?.sort((a, b) => parseFloat(b.second) - parseFloat(a.second))
     } else {
       /* start */
       const usersFilted = usersDisplay.filter((u) => {
-        return user.uid !== u.uid;
-      });
+        return user.uid !== u.uid
+      })
       const usersUpdate = usersFilted.map((u) => {
         const roomFound = rooms.find((room) => {
-          return (
-            room.members.includes(u.uid) &&
-            room.members.includes(user.uid) &&
-            room.private == true
-          );
-        });
-        let second = 0;
+          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+        })
+        let second = 0
         if (roomFound) {
           const messagesRemaining = messages.filter((message) => {
-            return roomFound.id === message.roomId;
-          });
-          if (
-            messagesRemaining.length !== 0 &&
-            messagesRemaining[messagesRemaining.length - 1].uid
-          ) {
-            second =
-              messagesRemaining[messagesRemaining.length - 1]?.createdAt
-                ?.seconds;
+            return roomFound.id === message.roomId
+          })
+          if (messagesRemaining.length !== 0 && messagesRemaining[messagesRemaining.length - 1].uid) {
+            second = messagesRemaining[messagesRemaining.length - 1]?.createdAt?.seconds
           }
         }
         return {
           ...u,
-          second: second === null || second === undefined ? u.second : second,
-        };
-      });
-      usersSort = usersUpdate?.sort(
-        (a, b) => parseFloat(b.second) - parseFloat(a.second)
-      );
+          second: second === null || second === undefined ? u.second : second
+        }
+      })
+      usersSort = usersUpdate?.sort((a, b) => parseFloat(b.second) - parseFloat(a.second))
     }
-    dispatch(setUsersDisplay(usersSort));
+    dispatch(setUsersDisplay(usersSort))
     /* end sort user */
     /* ===================== */
     /* ===================== */
     /* ===================== */
-  };
+  }
 
   React.useEffect(() => {
-    usersListRemaining();
-  }, [messages]);
+    usersListRemaining()
+  }, [messages])
 
   React.useEffect(() => {
     if (usersDisplay.length > 0) {
@@ -252,75 +223,60 @@ function CustomizedList() {
       /* ===================== */
       /* sort user */
       const usersFilted = users.filter((u) => {
-        return user.uid !== u.uid;
-      });
+        return user.uid !== u.uid
+      })
       const usersUpdate = usersFilted.map((u) => {
         const roomFound = rooms.find((room) => {
-          return (
-            room.members.includes(u.uid) &&
-            room.members.includes(user.uid) &&
-            room.private == true
-          );
-        });
-        let second = 0;
+          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+        })
+        let second = 0
         if (roomFound) {
           const messagesRemaining = messages.filter((message) => {
-            return roomFound.id === message.roomId;
-          });
-          if (
-            messagesRemaining.length !== 0 &&
-            messagesRemaining[messagesRemaining.length - 1].uid
-          ) {
-            second =
-              messagesRemaining[messagesRemaining.length - 1]?.createdAt
-                ?.seconds;
+            return roomFound.id === message.roomId
+          })
+          if (messagesRemaining.length !== 0 && messagesRemaining[messagesRemaining.length - 1].uid) {
+            second = messagesRemaining[messagesRemaining.length - 1]?.createdAt?.seconds
           }
         }
         return {
           ...u,
-          second: second === null || second === undefined ? u.second : second,
-        };
-      });
-      const usersSort = usersUpdate?.sort(
-        (a, b) => parseFloat(b.second) - parseFloat(a.second)
-      );
-      dispatch(setUsersDisplay(usersSort));
+          second: second === null || second === undefined ? u.second : second
+        }
+      })
+      const usersSort = usersUpdate?.sort((a, b) => parseFloat(b.second) - parseFloat(a.second))
+      dispatch(setUsersDisplay(usersSort))
       /* end sort user */
       /* =============== */
       /* =============== */
       /* =============== */
     }
-  }, [users]);
+  }, [users])
 
   const handleChatWindows = async (userSelected) => {
-    dispatch(setStateChatWindows(true));
+    dispatch(setStateChatWindows(true))
     const roomFound = rooms.find((room) => {
-      return (
-        room.members.includes(userSelected.uid) &&
-        room.members.includes(user.uid) &&
-        room.private == true
-      );
-    });
+      return room.members.includes(userSelected.uid) && room.members.includes(user.uid) && room.private == true
+    })
     if (roomFound) {
       if (roomFound.id !== roomSelected?.id) {
-        dispatch(setRoomSelected({ private: true }));
+        dispatch(setRoomSelected({ private: true }))
         dispatch(
           setRoomSelected({
             displayName: userSelected.displayName,
             photoURL: userSelected.photoURL,
-            ...roomFound,
+            ...roomFound
           })
-        );
+        )
       }
     } else {
-      dispatch(setRoomSelected({ private: true }));
-      dispatch(getDataStart());
+      dispatch(setRoomSelected({ private: true }))
+      dispatch(getDataStart())
       const resultRoom = await firebaseServices.addDocument("rooms", {
         roomName: "Private room",
         roomDes: "Private room",
         members: [user.uid, userSelected.uid],
-        private: true,
-      });
+        private: true
+      })
       await firebaseServices.addDocument("messages", {
         type: "text",
         text: `Let's chat!`,
@@ -328,19 +284,19 @@ function CustomizedList() {
         displayName: null,
         photoURL: "hidden",
         roomId: resultRoom.docId,
-        seen: [],
-      });
+        seen: []
+      })
       dispatch(
         setRoomSelected({
           displayName: userSelected.displayName,
           photoURL: userSelected.photoURL,
           id: resultRoom.docId,
-          ...resultRoom.data,
+          ...resultRoom.data
         })
-      );
-      dispatch(getDataSuccess());
+      )
+      dispatch(getDataSuccess())
     }
-  };
+  }
 
   const UsersRender = () => {
     if (usersDisplay.length == 0) {
@@ -350,7 +306,7 @@ function CustomizedList() {
             py: 0,
             minHeight: 32,
             color: "#6c6c6c",
-            padding: "10px 0px",
+            padding: "10px 0px"
           }}
         >
           <ListItemTextStyled
@@ -358,47 +314,34 @@ function CustomizedList() {
             primaryTypographyProps={{
               fontSize: 16,
               fontWeight: "bold",
-              textAlign: "center",
+              textAlign: "center"
             }}
           />
         </ListItemButton>
-      );
+      )
     } else {
       return usersDisplay.map((u) => {
         /* handle show last chat */
         const roomFound = rooms.find((room) => {
-          return (
-            room.members.includes(u.uid) &&
-            room.members.includes(user.uid) &&
-            room.private == true
-          );
-        });
-        let textMessage = "";
+          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+        })
+        let textMessage = ""
         if (roomFound) {
           const messagesRemaining = messages.filter((message) => {
-            return roomFound.id === message.roomId;
-          });
-          if (
-            messagesRemaining.length !== 0 &&
-            messagesRemaining[messagesRemaining.length - 1].uid
-          ) {
-            if (
-              messagesRemaining[messagesRemaining.length - 1].type === "image"
-            ) {
-              textMessage =
-                messagesRemaining[messagesRemaining.length - 1].uid === user.uid
-                  ? "you: " + "[image]"
-                  : "[image]";
+            return roomFound.id === message.roomId
+          })
+          if (messagesRemaining.length !== 0 && messagesRemaining[messagesRemaining.length - 1].uid) {
+            if (messagesRemaining[messagesRemaining.length - 1].type === "image") {
+              textMessage = messagesRemaining[messagesRemaining.length - 1].uid === user.uid ? "you: " + "[image]" : "[image]"
             } else {
               textMessage =
                 messagesRemaining[messagesRemaining.length - 1].uid === user.uid
-                  ? "you: " +
-                    messagesRemaining[messagesRemaining.length - 1].text
-                  : messagesRemaining[messagesRemaining.length - 1].text;
+                  ? "you: " + messagesRemaining[messagesRemaining.length - 1].text
+                  : messagesRemaining[messagesRemaining.length - 1].text
             }
           }
         }
-        const isOnline = statusData.find((status) => status.uid == u.uid);
+        const isOnline = statusData.find((status) => status.uid == u.uid)
         /* end handle */
         return (
           <ListItemButton
@@ -407,67 +350,35 @@ function CustomizedList() {
               py: 0,
               minHeight: 32,
               color: "#6c6c6c",
-              padding: "10px 15px !important",
+              padding: "10px 15px !important"
             }}
             onClick={() => handleChatWindows(u)}
           >
             <ListItemIcon sx={{ color: "inherit" }}>
               {isOnline && isOnline.state === "offline" ? (
-                <StyledBadgeOff
-                  overlap="circular"
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  variant="dot"
-                >
+                <StyledBadgeOff overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }} variant="dot">
                   {u.photoURL && u.photoURL.includes("http") ? (
-                    <Avatar
-                      alt={u.displayName}
-                      src={u.photoURL}
-                      sx={{ width: 35, height: 35 }}
-                    />
+                    <Avatar alt={u.displayName} src={u.photoURL} sx={{ width: 35, height: 35 }} />
                   ) : (
                     <>
                       {u.photoURL ? (
-                        <Avatar
-                          alt={u.displayName}
-                          src={`data:image/svg+xml;base64,${u.photoURL}`}
-                          sx={{ width: 35, height: 35 }}
-                        />
+                        <Avatar alt={u.displayName} src={`data:image/svg+xml;base64,${u.photoURL}`} sx={{ width: 35, height: 35 }} />
                       ) : (
-                        <Avatar
-                          alt={u.displayName}
-                          src={default_avatar}
-                          sx={{ width: 35, height: 35 }}
-                        />
+                        <Avatar alt={u.displayName} src={default_avatar} sx={{ width: 35, height: 35 }} />
                       )}
                     </>
                   )}
                 </StyledBadgeOff>
               ) : (
-                <StyledBadgeOnl
-                  overlap="circular"
-                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  variant="dot"
-                >
+                <StyledBadgeOnl overlap="circular" anchorOrigin={{ vertical: "bottom", horizontal: "right" }} variant="dot">
                   {u.photoURL && u.photoURL.includes("http") ? (
-                    <Avatar
-                      alt={u.displayName}
-                      src={u.photoURL}
-                      sx={{ width: 35, height: 35 }}
-                    />
+                    <Avatar alt={u.displayName} src={u.photoURL} sx={{ width: 35, height: 35 }} />
                   ) : (
                     <>
                       {u.photoURL ? (
-                        <Avatar
-                          alt={u.displayName}
-                          src={`data:image/svg+xml;base64,${u.photoURL}`}
-                          sx={{ width: 35, height: 35 }}
-                        />
+                        <Avatar alt={u.displayName} src={`data:image/svg+xml;base64,${u.photoURL}`} sx={{ width: 35, height: 35 }} />
                       ) : (
-                        <Avatar
-                          alt={u.displayName}
-                          src={default_avatar}
-                          sx={{ width: 35, height: 35 }}
-                        />
+                        <Avatar alt={u.displayName} src={default_avatar} sx={{ width: 35, height: 35 }} />
                       )}
                     </>
                   )}
@@ -479,14 +390,14 @@ function CustomizedList() {
                 display: "flex",
                 flexDirection: "column",
                 position: "relative",
-                width: "100%",
+                width: "100%"
               }}
             >
               <ListItemTextStyled
                 primary={u.displayName}
                 primaryTypographyProps={{
                   fontSize: 16,
-                  fontWeight: "bold",
+                  fontWeight: "bold"
                 }}
                 sx={{ margin: 0 }}
               />
@@ -494,19 +405,17 @@ function CustomizedList() {
                 primary={textMessage}
                 primaryTypographyProps={{
                   fontSize: 14,
-                  fontWeight: "500",
+                  fontWeight: "500"
                 }}
                 sx={{ margin: 0 }}
               />
-              <p className="createdTime">
-                {formatDate(u?.second) ? formatDate(u?.second) : ""}
-              </p>
+              <p className="createdTime">{formatDate(u?.second) ? formatDate(u?.second) : ""}</p>
             </div>
           </ListItemButton>
-        );
-      });
+        )
+      })
     }
-  };
+  }
 
   return (
     <BoxStyled style={{ display: viewBody ? "none" : "block" }}>
@@ -515,21 +424,21 @@ function CustomizedList() {
           components: {
             MuiListItemButton: {
               defaultProps: {
-                disableTouchRipple: true,
-              },
-            },
+                disableTouchRipple: true
+              }
+            }
           },
           palette: {
             mode: theme ? "light" : "dark",
-            background: { paper: theme ? "white" : "dark" },
-          },
+            background: { paper: theme ? "white" : "dark" }
+          }
         })}
       >
         <Paper elevation={0} sx={{ maxWidth: "100%" }}>
           <FireNav component="nav" disablePadding>
             <Box
               sx={{
-                maxWidth: "100%",
+                maxWidth: "100%"
               }}
             >
               <ListItemText
@@ -539,19 +448,19 @@ function CustomizedList() {
                   fontWeight: "700",
                   lineHeight: "20px",
                   mb: "2px",
-                  color: "#a7a9b3",
+                  color: "#a7a9b3"
                 }}
                 secondaryTypographyProps={{
                   noWrap: true,
                   fontSize: 12,
-                  lineHeight: "16px",
+                  lineHeight: "16px"
                 }}
                 sx={{ my: 0, px: 3, pt: 2.5, pb: 1, textAlign: "left" }}
               />
               <List
                 sx={{
                   bgcolor: "background.paper",
-                  "& ul": { padding: 0 },
+                  "& ul": { padding: 0 }
                 }}
               >
                 <UsersRender />
@@ -561,7 +470,7 @@ function CustomizedList() {
         </Paper>
       </ThemeProvider>
     </BoxStyled>
-  );
+  )
 }
 
-export default React.memo(CustomizedList);
+export default React.memo(CustomizedList)
