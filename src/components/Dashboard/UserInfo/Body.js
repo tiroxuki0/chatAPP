@@ -1,40 +1,36 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import PersonIcon from "@mui/icons-material/Person";
-import EditIcon from "@mui/icons-material/Edit";
-import Tooltip from "@mui/material/Tooltip";
-import Button from "@mui/material/Button";
-import CheckIcon from "@mui/icons-material/Check";
-import LockIcon from "@mui/icons-material/Lock";
-import { styled, ThemeProvider, createTheme } from "@mui/material/styles";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { ToastContainer, toast } from "react-toastify";
-import styledd from "styled-components";
-import List from "@mui/material/List";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-import { useSelector, useDispatch } from "react-redux";
-import { checkExist, updateDocument } from "../../../firebase/services";
-import { signInSuccess } from "../../../redux/authSlice";
-import {
-  signInWithEmailAndPassword,
-  updateEmail,
-  updatePassword,
-} from "firebase/auth";
-import { auth } from "../../../firebase/config";
+import * as React from "react"
+import Box from "@mui/material/Box"
+import PersonIcon from "@mui/icons-material/Person"
+import EditIcon from "@mui/icons-material/Edit"
+import Tooltip from "@mui/material/Tooltip"
+import Button from "@mui/material/Button"
+import CheckIcon from "@mui/icons-material/Check"
+import LockIcon from "@mui/icons-material/Lock"
+import { styled, ThemeProvider, createTheme } from "@mui/material/styles"
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator"
+import { ToastContainer, toast } from "react-toastify"
+import styledd from "styled-components"
+import List from "@mui/material/List"
+import Paper from "@mui/material/Paper"
+import Typography from "@mui/material/Typography"
+import { useSelector, useDispatch } from "react-redux"
+import { checkExist, updateDocument } from "../../../firebase/services"
+import { signInSuccess } from "../../../redux/authSlice"
+import { signInWithEmailAndPassword, updateEmail, updatePassword } from "firebase/auth"
+import { auth } from "../../../firebase/config"
 
 const BoxStyled = styledd(Box)`
   overflow: hidden auto;
   margin-top: 80px;
   position: relative;
-`;
+`
 
 const HeaderInfo = styledd.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-`;
+`
 
 const ButtonStyled = styledd(Button)`
   min-width: 30px !important;
@@ -46,7 +42,7 @@ const ButtonStyled = styledd(Button)`
       fill: white;
     }
   }
-`;
+`
 
 const ItemInfo = styledd.div`
   display: flex;
@@ -54,7 +50,7 @@ const ItemInfo = styledd.div`
   align-items: center;
   margin-bottom: 20px;
   position: relative;
-`;
+`
 
 const LeftInfo = styledd.div`
   display: flex;
@@ -65,7 +61,7 @@ const LeftInfo = styledd.div`
   div{
     width: 100%;
   }
-`;
+`
 
 const TextValidatorStyled = styledd(TextValidator)`
 width: 100%;
@@ -76,174 +72,174 @@ width: 100%;
   fieldset{
     border-color: transparent !important;
   }
-`;
+`
 
 const FireNav = styled(List)({
   "& .MuiListItemButton-root": {
     paddingLeft: 24,
-    paddingRight: 24,
+    paddingRight: 24
   },
   "& .MuiListItemIcon-root": {
     minWidth: 0,
-    marginRight: 16,
+    marginRight: 16
   },
   "& .MuiSvgIcon-root": {
-    fontSize: 20,
-  },
-});
+    fontSize: 20
+  }
+})
 
 function CustomizedList() {
-  const dispatch = useDispatch();
-  const theme = useSelector((state) => state.auth.theme);
-  const user = useSelector((state) => state.auth.user);
-  const [name, setName] = React.useState(user.displayName);
-  const [email, setEmail] = React.useState(user.email);
-  const [password, setPassword] = React.useState(user.password);
-  const [isName, setIsName] = React.useState(true);
-  const [isEmail, setIsEmail] = React.useState(true);
-  const [isPassword, setIsPassword] = React.useState(true);
-  const [isEdit, setIsEdit] = React.useState(false);
+  const dispatch = useDispatch()
+  const theme = useSelector((state) => state.auth.theme)
+  const user = useSelector((state) => state.auth.user)
+  const [name, setName] = React.useState(user?.displayName)
+  const [email, setEmail] = React.useState(user?.email)
+  const [password, setPassword] = React.useState(user?.password)
+  const [isName, setIsName] = React.useState(true)
+  const [isEmail, setIsEmail] = React.useState(true)
+  const [isPassword, setIsPassword] = React.useState(true)
+  const [isEdit, setIsEdit] = React.useState(false)
 
   ValidatorForm.addValidationRule("isEmailExist", async (email) => {
     const mailCheck = await checkExist("users", {
       field: "email",
       operator: "==",
-      value: email,
-    });
-    if (mailCheck.code == 0 && mailCheck.data.id !== user.id) {
-      return false;
+      value: email
+    })
+    if (mailCheck.code == 0 && mailCheck.data.id !== user?.id) {
+      return false
     }
-    return true;
-  });
+    return true
+  })
 
   const toastOptions = {
     position: "bottom-left",
     autoClose: 1000,
     pauseOnHover: true,
     draggable: true,
-    theme: "dark",
-  };
+    theme: "dark"
+  }
 
   const handleSaveEdit = async () => {
-    setIsEdit(false);
-    setIsName(true);
-    setIsEmail(true);
-    setIsPassword(true);
-    const { id, ...remaining } = user;
+    setIsEdit(false)
+    setIsName(true)
+    setIsEmail(true)
+    setIsPassword(true)
+    const { id, ...remaining } = user
     updateDocument(
       "users",
       {
         ...remaining,
         displayName: name,
         email,
-        password,
+        password
       },
-      user.id
-    );
-    if (user.password !== password && user.email !== email) {
+      user?.id
+    )
+    if (user?.password !== password && user?.email !== email) {
       await updateEmail(auth.currentUser, email)
         .then(async () => {
           // Email updated!
-          console.log("Email updated");
+          console.log("Email updated")
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error)
           // An error occurred
           // ...
-        });
+        })
       await updatePassword(auth.currentUser, password)
         .then(() => {
           // Password updated!
-          console.log("Password updated");
+          console.log("Password updated")
           toast.success("Email and Password updated!", {
             ...toastOptions,
-            position: "bottom-left",
-          });
+            position: "bottom-left"
+          })
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error)
           // An error occurred
           // ...
-        });
+        })
       await signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // Signed in
-          console.log("Re-SignIn");
+          console.log("Re-SignIn")
 
           /*  */
         })
         .catch((error) => {
-          return { code: 0, message: "Signin failed!", error };
-        });
-    } else if (user.password !== password) {
+          return { code: 0, message: "Signin failed!", error }
+        })
+    } else if (user?.password !== password) {
       await updatePassword(auth.currentUser, password)
         .then(() => {
           // Password updated!
-          console.log("Password updated");
+          console.log("Password updated")
           toast.success("Password updated!", {
             ...toastOptions,
-            position: "bottom-left",
-          });
+            position: "bottom-left"
+          })
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error)
           // An error occurred
-        });
-      await signInWithEmailAndPassword(auth, user.email, password)
+        })
+      await signInWithEmailAndPassword(auth, user?.email, password)
         .then((userCredential) => {
           // Signed in
-          console.log("Re-SignIn");
+          console.log("Re-SignIn")
 
           /*  */
         })
         .catch((error) => {
-          return { code: 0, message: "Signin failed!", error };
-        });
-    } else if (user.email !== email) {
+          return { code: 0, message: "Signin failed!", error }
+        })
+    } else if (user?.email !== email) {
       await updateEmail(auth.currentUser, email)
         .then(async () => {
           // Email updated!
-          console.log("Email updated");
+          console.log("Email updated")
           toast.success("Email updated!", {
             ...toastOptions,
-            position: "bottom-left",
-          });
+            position: "bottom-left"
+          })
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error)
           // An error occurred
-        });
-      await signInWithEmailAndPassword(auth, email, user.password)
+        })
+      await signInWithEmailAndPassword(auth, email, user?.password)
         .then((userCredential) => {
           // Signed in
-          console.log("Re-SignIn");
+          console.log("Re-SignIn")
 
           /*  */
         })
         .catch((error) => {
-          return { code: 0, message: "Signin failed!", error };
-        });
-    } else if (user.username !== name) {
+          return { code: 0, message: "Signin failed!", error }
+        })
+    } else if (user?.username !== name) {
       toast.success("Username updated!", {
         ...toastOptions,
-        position: "bottom-left",
-      });
+        position: "bottom-left"
+      })
     }
-    dispatch(signInSuccess({ ...user, displayName: name, email, password }));
-  };
+    dispatch(signInSuccess({ ...user, displayName: name, email, password }))
+  }
 
   const handleChangeName = () => {
-    setIsName(false);
-    setIsEdit(true);
-  };
+    setIsName(false)
+    setIsEdit(true)
+  }
   const handleChangeEMail = () => {
-    setIsEdit(true);
-    setIsEmail(false);
-  };
+    setIsEdit(true)
+    setIsEmail(false)
+  }
   const handleChangePassword = () => {
-    setIsEdit(true);
-    setIsPassword(false);
-  };
+    setIsEdit(true)
+    setIsPassword(false)
+  }
 
   return (
     <BoxStyled>
@@ -252,21 +248,21 @@ function CustomizedList() {
           components: {
             MuiListItemButton: {
               defaultProps: {
-                disableTouchRipple: true,
-              },
-            },
+                disableTouchRipple: true
+              }
+            }
           },
           palette: {
             mode: theme ? "light" : "dark",
-            background: { paper: theme ? "white" : "dark" },
-          },
+            background: { paper: theme ? "white" : "dark" }
+          }
         })}
       >
         <Paper elevation={0} sx={{ maxWidth: "100%" }}>
           <FireNav component="nav" disablePadding>
             <ValidatorForm
               sx={{
-                maxWidth: "100%",
+                maxWidth: "100%"
               }}
               onSubmit={handleSaveEdit}
             >
@@ -286,14 +282,14 @@ function CustomizedList() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "left",
-                    gap: "10px",
+                    gap: "10px"
                   }}
                 >
                   <PersonIcon
                     sx={{
                       width: 16,
                       height: 16,
-                      color: !theme ? "rgba(255, 255, 255, 0.5)" : "#797c8c",
+                      color: !theme ? "rgba(255, 255, 255, 0.5)" : "#797c8c"
                     }}
                   />
                   Personal Info
@@ -303,23 +299,16 @@ function CustomizedList() {
                     <ButtonStyled
                       type="submit"
                       sx={{
-                        background: theme
-                          ? "#edf7f0 !important"
-                          : "rgba(78,172,109,.1) !important",
-                        minWidth: "40px !important",
+                        background: theme ? "#edf7f0 !important" : "rgba(78,172,109,.1) !important",
+                        minWidth: "40px !important"
                       }}
                     >
-                      <CheckIcon
-                        sx={{ width: 16, height: 16, color: "#4eac6d" }}
-                      />
+                      <CheckIcon sx={{ width: 16, height: 16, color: "#4eac6d" }} />
                     </ButtonStyled>
                   </Tooltip>
                 )}
               </HeaderInfo>
-              <List
-                sx={{ bgcolor: "background.paper", "& ul": { padding: 0 } }}
-                subheader={<li />}
-              >
+              <List sx={{ bgcolor: "background.paper", "& ul": { padding: 0 } }} subheader={<li />}>
                 <ItemInfo>
                   <LeftInfo>
                     <h5
@@ -328,7 +317,7 @@ function CustomizedList() {
                         fontSize: "20px",
                         color: theme ? "#797c8c" : "#adb5bd",
                         fontWeight: 600,
-                        fontSize: 15,
+                        fontSize: 15
                       }}
                     >
                       Name
@@ -337,16 +326,13 @@ function CustomizedList() {
                       disabled={isName}
                       fullWidth
                       validators={["required", "minStringLength:8"]}
-                      errorMessages={[
-                        "Please enter name",
-                        "Display name must be at least 8 characters long",
-                      ]}
+                      errorMessages={["Please enter name", "Display name must be at least 8 characters long"]}
                       sx={{
                         margin: 0,
                         fontSize: "20px",
                         color: theme ? "#495057" : "#adb5bd",
                         fontWeight: 600,
-                        fontSize: 16,
+                        fontSize: 16
                       }}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -354,23 +340,13 @@ function CustomizedList() {
                   </LeftInfo>
                   <Tooltip title="Edit Name" placement="right">
                     <ButtonStyled
-                      disabled={user.providerId == "firebase" ? false : true}
+                      disabled={user?.providerId == "firebase" ? false : true}
                       onClick={handleChangeName}
                       sx={{
-                        background: theme
-                          ? "#edf7f0 !important"
-                          : "rgba(78,172,109,.1) !important",
+                        background: theme ? "#edf7f0 !important" : "rgba(78,172,109,.1) !important"
                       }}
                     >
-                      {user.providerId == "firebase" ? (
-                        <EditIcon
-                          sx={{ width: 16, height: 16, color: "#4eac6d" }}
-                        />
-                      ) : (
-                        <LockIcon
-                          sx={{ width: 16, height: 16, color: "#495057" }}
-                        />
-                      )}
+                      {user?.providerId == "firebase" ? <EditIcon sx={{ width: 16, height: 16, color: "#4eac6d" }} /> : <LockIcon sx={{ width: 16, height: 16, color: "#495057" }} />}
                     </ButtonStyled>
                   </Tooltip>
                 </ItemInfo>
@@ -382,7 +358,7 @@ function CustomizedList() {
                         fontSize: "20px",
                         color: theme ? "#797c8c" : "#adb5bd",
                         fontWeight: 600,
-                        fontSize: 15,
+                        fontSize: 15
                       }}
                     >
                       Email
@@ -391,24 +367,14 @@ function CustomizedList() {
                       disabled={isEmail}
                       fullWidth
                       autoComplete="email"
-                      validators={[
-                        "required",
-                        "isEmail",
-                        "minStringLength:18",
-                        "isEmailExist",
-                      ]}
-                      errorMessages={[
-                        "Please enter email",
-                        "Email is not valid!",
-                        "Email must be at least 8 characters long",
-                        "Email is already exist",
-                      ]}
+                      validators={["required", "isEmail", "minStringLength:18", "isEmailExist"]}
+                      errorMessages={["Please enter email", "Email is not valid!", "Email must be at least 8 characters long", "Email is already exist"]}
                       sx={{
                         margin: 0,
                         fontSize: "20px",
                         color: theme ? "#495057" : "#adb5bd",
                         fontWeight: 600,
-                        fontSize: 16,
+                        fontSize: 16
                       }}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -416,23 +382,13 @@ function CustomizedList() {
                   </LeftInfo>
                   <Tooltip title="Edit Email" placement="right">
                     <ButtonStyled
-                      disabled={user.providerId == "firebase" ? false : true}
+                      disabled={user?.providerId == "firebase" ? false : true}
                       onClick={handleChangeEMail}
                       sx={{
-                        background: theme
-                          ? "#edf7f0 !important"
-                          : "rgba(78,172,109,.1) !important",
+                        background: theme ? "#edf7f0 !important" : "rgba(78,172,109,.1) !important"
                       }}
                     >
-                      {user.providerId == "firebase" ? (
-                        <EditIcon
-                          sx={{ width: 16, height: 16, color: "#4eac6d" }}
-                        />
-                      ) : (
-                        <LockIcon
-                          sx={{ width: 16, height: 16, color: "#495057" }}
-                        />
-                      )}
+                      {user?.providerId == "firebase" ? <EditIcon sx={{ width: 16, height: 16, color: "#4eac6d" }} /> : <LockIcon sx={{ width: 16, height: 16, color: "#495057" }} />}
                     </ButtonStyled>
                   </Tooltip>
                 </ItemInfo>
@@ -444,7 +400,7 @@ function CustomizedList() {
                         fontSize: "20px",
                         color: theme ? "#797c8c" : "#adb5bd",
                         fontWeight: 600,
-                        fontSize: 15,
+                        fontSize: 15
                       }}
                     >
                       Password
@@ -454,16 +410,13 @@ function CustomizedList() {
                       type={isPassword ? "password" : "text"}
                       fullWidth
                       validators={["required", "minStringLength:8"]}
-                      errorMessages={[
-                        "Please enter password",
-                        "Password must be at least 8 characters long",
-                      ]}
+                      errorMessages={["Please enter password", "Password must be at least 8 characters long"]}
                       sx={{
                         margin: 0,
                         fontSize: "20px",
                         color: theme ? "#495057" : "#adb5bd",
                         fontWeight: 600,
-                        fontSize: 16,
+                        fontSize: 16
                       }}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -471,23 +424,13 @@ function CustomizedList() {
                   </LeftInfo>
                   <Tooltip title="Edit Password" placement="right">
                     <ButtonStyled
-                      disabled={user.providerId == "firebase" ? false : true}
+                      disabled={user?.providerId == "firebase" ? false : true}
                       onClick={handleChangePassword}
                       sx={{
-                        background: theme
-                          ? "#edf7f0 !important"
-                          : "rgba(78,172,109,.1) !important",
+                        background: theme ? "#edf7f0 !important" : "rgba(78,172,109,.1) !important"
                       }}
                     >
-                      {user.providerId == "firebase" ? (
-                        <EditIcon
-                          sx={{ width: 16, height: 16, color: "#4eac6d" }}
-                        />
-                      ) : (
-                        <LockIcon
-                          sx={{ width: 16, height: 16, color: "#495057" }}
-                        />
-                      )}
+                      {user?.providerId == "firebase" ? <EditIcon sx={{ width: 16, height: 16, color: "#4eac6d" }} /> : <LockIcon sx={{ width: 16, height: 16, color: "#495057" }} />}
                     </ButtonStyled>
                   </Tooltip>
                 </ItemInfo>
@@ -498,7 +441,7 @@ function CustomizedList() {
         </Paper>
       </ThemeProvider>
     </BoxStyled>
-  );
+  )
 }
 
-export default React.memo(CustomizedList);
+export default React.memo(CustomizedList)

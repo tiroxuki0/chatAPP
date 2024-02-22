@@ -1,54 +1,43 @@
-import * as React from "react";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import RecentActorsIcon from "@mui/icons-material/RecentActors";
-import SettingsIcon from "@mui/icons-material/Settings";
-import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
-import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
-import GroupsIcon from "@mui/icons-material/Groups";
-import { styled } from "@mui/material/styles";
-import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
-import styledd from "styled-components";
-import { Link } from "react-router-dom";
-import Box from "@mui/material/Box";
-import ListItemButton from "@mui/material/ListItemButton";
-import Menu from "@mui/material/Menu";
-import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
-import MenuItem from "@mui/material/MenuItem";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import {
-  setViewBody,
-  setViewChatList,
-  setStateSearch,
-  clearData,
-} from "../../redux/dataSlice";
-import {
-  setTheme,
-  setStateChatWindows,
-  signInFailed,
-} from "../../redux/authSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { firebaseSignOut, logoutUserStatus } from "../../firebase/services";
-import { default_avatar } from "../../assets/imgs";
+import * as React from "react"
+import ListItemIcon from "@mui/material/ListItemIcon"
+import RecentActorsIcon from "@mui/icons-material/RecentActors"
+import SettingsIcon from "@mui/icons-material/Settings"
+import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined"
+import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined"
+import GroupsIcon from "@mui/icons-material/Groups"
+import { styled } from "@mui/material/styles"
+import Tooltip, { tooltipClasses } from "@mui/material/Tooltip"
+import styledd from "styled-components"
+import { Link } from "react-router-dom"
+import Box from "@mui/material/Box"
+import ListItemButton from "@mui/material/ListItemButton"
+import Menu from "@mui/material/Menu"
+import Avatar from "@mui/material/Avatar"
+import Typography from "@mui/material/Typography"
+import MenuItem from "@mui/material/MenuItem"
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined"
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined"
+import { setViewBody, setViewChatList, setStateSearch, clearData } from "../../redux/dataSlice"
+import { setTheme, setStateChatWindows, signInFailed } from "../../redux/authSlice"
+import { useDispatch, useSelector } from "react-redux"
+import { firebaseSignOut, logoutUserStatus } from "../../firebase/services"
+import { default_avatar } from "../../assets/imgs"
 
-const BootstrapTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} arrow classes={{ popper: className }} />
-))(({ theme }) => ({
+const BootstrapTooltip = styled(({ className, ...props }) => <Tooltip {...props} arrow classes={{ popper: className }} />)(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.common.black,
+    color: theme.palette.common.black
   },
   [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.black,
-  },
-}));
+    backgroundColor: theme.palette.common.black
+  }
+}))
 
 const SignIn = styled(Link)`
   color: white;
   text-decoration: none;
   text-transform: uppercase;
   font-weight: 600;
-`;
+`
 
 const ListItemButtonStyled = styledd(ListItemButton)`
   width: 100%;
@@ -59,13 +48,13 @@ const ListItemButtonStyled = styledd(ListItemButton)`
     min-width: 100%;
     justify-content: center;
   }
-`;
+`
 
 const Wrapper = styledd.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-`;
+`
 
 const ListTop = styledd.div`
   .MuiListItemIcon-root{
@@ -74,7 +63,7 @@ const ListTop = styledd.div`
       margin-left: 0px;
     }
   }
-`;
+`
 
 const ListBottom = styledd.div`
   .MuiListItemIcon-root{
@@ -86,58 +75,58 @@ const ListBottom = styledd.div`
   @media only screen and (max-width: 400px) {
     margin-bottom: 50px;
   }
-`;
+`
 
 const MenuItemStyled = styledd(MenuItem)`
   min-width: 150px;
   display: flex;
   align-items: center;
   justify-content: space-between !important;
-`;
+`
 
 export const ListItems = () => {
-  const dispatch = useDispatch();
-  const theme = useSelector((state) => state.auth.theme);
-  const login = useSelector((state) => state.auth.login);
-  const user = useSelector((state) => state.auth.user);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const dispatch = useDispatch()
+  const theme = useSelector((state) => state.auth.theme)
+  const login = useSelector((state) => state.auth.login)
+  const user = useSelector((state) => state.auth.user)
+  const [anchorElUser, setAnchorElUser] = React.useState(null)
 
   const handleCallWindowsChat = () => {
-    dispatch(setViewBody(true));
-    dispatch(setStateChatWindows(false));
-    dispatch(setViewChatList(true));
-    dispatch(setStateSearch(""));
-  };
+    dispatch(setViewBody(true))
+    dispatch(setStateChatWindows(false))
+    dispatch(setViewChatList(true))
+    dispatch(setStateSearch(""))
+  }
 
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(!anchorElUser);
-  };
+    setAnchorElUser(!anchorElUser)
+  }
 
   const handleCloseUserMenu = async (event) => {
-    setAnchorElUser(false);
+    setAnchorElUser(false)
     if (event.currentTarget.localName === "li") {
-      const path = event.currentTarget.attributes.path.value;
+      const path = event.currentTarget.attributes.path.value
       switch (path) {
         case "/": {
-          dispatch(setViewChatList(false));
-          dispatch(setStateChatWindows(false));
-          break;
+          dispatch(setViewChatList(false))
+          dispatch(setStateChatWindows(false))
+          break
         }
         case "/sign-out": {
-          logoutUserStatus(user.uid);
-          await firebaseSignOut();
-          dispatch(signInFailed());
-          dispatch(clearData());
-          break;
+          logoutUserStatus(user.uid)
+          await firebaseSignOut()
+          dispatch(signInFailed())
+          dispatch(clearData())
+          break
         }
         default: {
-          return "not match path";
+          return "not match path"
         }
       }
     } else {
-      setAnchorElUser(false);
+      setAnchorElUser(false)
     }
-  };
+  }
 
   return (
     <>
@@ -153,30 +142,26 @@ export const ListItems = () => {
           <BootstrapTooltip title="Contacts" placement="right">
             <ListItemButtonStyled
               onClick={() => {
-                dispatch(setViewBody(false));
-                dispatch(setStateChatWindows(false));
-                dispatch(setViewChatList(true));
-                dispatch(setStateSearch(""));
+                dispatch(setViewBody(false))
+                dispatch(setStateChatWindows(false))
+                dispatch(setViewChatList(true))
+                dispatch(setStateSearch(""))
               }}
             >
               <ListItemIcon>
-                <RecentActorsIcon
-                  sx={{ color: "#878a92", width: 28, height: 28 }}
-                />
+                <RecentActorsIcon sx={{ color: "#878a92", width: 28, height: 28 }} />
               </ListItemIcon>
             </ListItemButtonStyled>
           </BootstrapTooltip>
           <BootstrapTooltip title="Settings" placement="right">
             <ListItemButtonStyled
               onClick={() => {
-                dispatch(setViewChatList(false));
-                dispatch(setStateChatWindows(false));
+                dispatch(setViewChatList(false))
+                dispatch(setStateChatWindows(false))
               }}
             >
               <ListItemIcon>
-                <SettingsIcon
-                  sx={{ color: "#878a92", width: 28, height: 28 }}
-                />
+                <SettingsIcon sx={{ color: "#878a92", width: 28, height: 28 }} />
               </ListItemIcon>
             </ListItemButtonStyled>
           </BootstrapTooltip>
@@ -187,9 +172,7 @@ export const ListItems = () => {
           <BootstrapTooltip title="Dark mode" placement="right">
             <ListItemButtonStyled onClick={() => dispatch(setTheme())}>
               <ListItemIcon>
-                <DarkModeOutlinedIcon
-                  sx={{ color: "#878a92", width: 28, height: 28 }}
-                />
+                <DarkModeOutlinedIcon sx={{ color: "#878a92", width: 28, height: 28 }} />
               </ListItemIcon>
             </ListItemButtonStyled>
           </BootstrapTooltip>
@@ -197,9 +180,7 @@ export const ListItems = () => {
           <BootstrapTooltip title="Light mode" placement="right">
             <ListItemButtonStyled onClick={() => dispatch(setTheme())}>
               <ListItemIcon>
-                <LightModeOutlinedIcon
-                  sx={{ color: "#878a92", width: 28, height: 28 }}
-                />
+                <LightModeOutlinedIcon sx={{ color: "#878a92", width: 28, height: 28 }} />
               </ListItemIcon>
             </ListItemButtonStyled>
           </BootstrapTooltip>
@@ -220,61 +201,42 @@ export const ListItems = () => {
             <Box sx={{ flexGrow: 0 }}>
               <ListItemIcon sx={{ p: 0 }}>
                 {user.photoURL && user.photoURL.includes("http") ? (
-                  <Avatar
-                    alt={user.displayName}
-                    src={user.photoURL}
-                    sx={{ width: 40, height: 40 }}
-                    className="nav_avatar"
-                  />
+                  <Avatar alt={user.displayName} src={user.photoURL} sx={{ width: 40, height: 40 }} className="nav_avatar" />
                 ) : (
                   <>
                     {user.photoURL ? (
-                      <Avatar
-                        alt={user.displayName}
-                        src={`data:image/svg+xml;base64,${user.photoURL}`}
-                        sx={{ width: 40, height: 40 }}
-                        className="nav_avatar"
-                      />
+                      <Avatar alt={user.displayName} src={`data:image/svg+xml;base64,${user.photoURL}`} sx={{ width: 40, height: 40 }} className="nav_avatar" />
                     ) : (
-                      <Avatar
-                        alt={user.displayName}
-                        src={default_avatar}
-                        sx={{ width: 40, height: 40 }}
-                        className="nav_avatar"
-                      />
+                      <Avatar alt={user.displayName} src={default_avatar} sx={{ width: 40, height: 40 }} className="nav_avatar" />
                     )}
                   </>
                 )}
               </ListItemIcon>
               <Menu
                 sx={{
-                  mt: "-60px",
+                  mt: "-60px"
                 }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
                 anchorOrigin={{
                   vertical: "bottom",
-                  horizontal: "left",
+                  horizontal: "left"
                 }}
                 keepMounted
                 transformOrigin={{
                   vertical: "bottom",
-                  horizontal: "left",
+                  horizontal: "left"
                 }}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
                 <MenuItemStyled path="/" onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">Setting</Typography>
-                  <SettingsOutlinedIcon
-                    sx={{ color: "#878a92", width: 20, height: 20 }}
-                  />
+                  <SettingsOutlinedIcon sx={{ color: "#878a92", width: 20, height: 20 }} />
                 </MenuItemStyled>
                 <MenuItemStyled path="/sign-out" onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">Sign out</Typography>
-                  <LogoutOutlinedIcon
-                    sx={{ color: "#878a92", width: 20, height: 20 }}
-                  />
+                  <LogoutOutlinedIcon sx={{ color: "#878a92", width: 20, height: 20 }} />
                 </MenuItemStyled>
               </Menu>
             </Box>
@@ -286,7 +248,7 @@ export const ListItems = () => {
         )}
       </ListBottom>
     </>
-  );
-};
+  )
+}
 
-export default ListItems;
+export default ListItems

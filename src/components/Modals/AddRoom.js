@@ -1,27 +1,27 @@
-import * as React from "react";
-import Backdrop from "@mui/material/Backdrop";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
-import AddCommentIcon from "@mui/icons-material/AddComment";
-import Box from "@mui/material/Box";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
-import Grid from "@mui/material/Grid";
-import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
-import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
-import { useSelector } from "react-redux";
-import useModal from "../../hooks/useModal";
-import styled from "styled-components";
-import { addDocument } from "../../firebase/services";
-import { useDispatch } from "react-redux";
+import * as React from "react"
+import Backdrop from "@mui/material/Backdrop"
+import Button from "@mui/material/Button"
+import Typography from "@mui/material/Typography"
+import Avatar from "@mui/material/Avatar"
+import AddCommentIcon from "@mui/icons-material/AddComment"
+import Box from "@mui/material/Box"
+import data from "@emoji-mart/data"
+import Picker from "@emoji-mart/react"
+import Grid from "@mui/material/Grid"
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt"
+import { ValidatorForm, TextValidator } from "react-material-ui-form-validator"
+import { useSelector } from "react-redux"
+import useModal from "../../hooks/useModal"
+import styled from "styled-components"
+import { addDocument } from "../../firebase/services"
+import { useDispatch } from "react-redux"
 
 const ModalAddWrapper = styled(Box)`
   padding: 20px;
   border-radius: 5px;
   max-width: 500px;
   width: 100%;
-`;
+`
 
 const TextValidatorStyled = styled(TextValidator)`
   & > div {
@@ -33,7 +33,7 @@ const TextValidatorStyled = styled(TextValidator)`
   label {
     color: currentColor;
   }
-`;
+`
 
 const Buttons = styled.div`
   display: flex;
@@ -44,7 +44,7 @@ const Buttons = styled.div`
     background: rgb(46, 46, 46);
     color: white;
   }
-`;
+`
 
 const PickerWrapper = styled.div`
   position: absolute;
@@ -73,58 +73,58 @@ const PickerWrapper = styled.div`
     height: 15px;
     background: transparent;
   }
-`;
+`
 
 export default function ModalAddRoom() {
-  const addRoom = useSelector((state) => state.auth.addRoom);
-  const user = useSelector((state) => state.auth.user);
-  const rooms = useSelector((state) => state.data.rooms);
-  const theme = useSelector((state) => state.auth.theme);
-  const btnPickerRef = React.useRef(null);
-  const pickerRef = React.useRef(null);
-  const nameRef = React.useRef(null);
-  const desRef = React.useRef(null);
-  const [error, setError] = React.useState(null);
-  const [name, setName] = React.useState("");
-  const [des, setDes] = React.useState("");
-  const { modalAddRoom } = useModal();
+  const addRoom = useSelector((state) => state.auth.addRoom)
+  const user = useSelector((state) => state.auth.user)
+  const rooms = useSelector((state) => state.data.rooms)
+  const theme = useSelector((state) => state.auth.theme)
+  const btnPickerRef = React.useRef(null)
+  const pickerRef = React.useRef(null)
+  const nameRef = React.useRef(null)
+  const desRef = React.useRef(null)
+  const [error, setError] = React.useState(null)
+  const [name, setName] = React.useState("")
+  const [des, setDes] = React.useState("")
+  const { modalAddRoom } = useModal()
 
   const handleEmojiSelect = (emoji) => {
-    setName((prev) => prev + emoji.native);
-  };
+    setName((prev) => prev + emoji.native)
+  }
 
   const onClickBackdrop = (e) => {
     if ([...e.target.classList].includes("MuiBackdrop-root")) {
-      modalAddRoom(false);
-      setName("");
-      setDes("");
+      modalAddRoom(false)
+      setName("")
+      setDes("")
     }
-  };
+  }
 
   const handleClose = () => {
-    modalAddRoom(false);
-    setName("");
-    setDes("");
-  };
+    modalAddRoom(false)
+    setName("")
+    setDes("")
+  }
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     const roomFound = rooms.find((room) => {
-      return room.roomName === name;
-    });
+      return room.roomName === name
+    })
     if (roomFound) {
-      setError(true);
+      setError(true)
     } else {
-      modalAddRoom(false);
-      setName("");
-      setDes("");
-      setError(false);
+      modalAddRoom(false)
+      setName("")
+      setDes("")
+      setError(false)
       const result = await addDocument("rooms", {
         roomName: name.trim(),
         roomDes: des.trim(),
         members: [user.uid],
-        private: false,
-      });
+        private: false
+      })
       addDocument("messages", {
         type: "text",
         text: `Welcome to ${name.trim()}`,
@@ -132,51 +132,43 @@ export default function ModalAddRoom() {
         displayName: null,
         photoURL: "hidden",
         roomId: result.docId,
-        seen: [],
-      });
+        seen: []
+      })
     }
-  };
+  }
 
   React.useEffect(() => {
     btnPickerRef.current.addEventListener("mouseover", () => {
-      pickerRef.current.classList.add("enable");
-    });
+      pickerRef.current.classList.add("enable")
+    })
     pickerRef.current.addEventListener("mouseover", (e) => {
-      e.currentTarget.classList.add("enable");
-    });
+      e.currentTarget.classList.add("enable")
+    })
 
     btnPickerRef.current.addEventListener("mouseleave", () => {
-      pickerRef.current.classList.remove("enable");
-    });
+      pickerRef.current.classList.remove("enable")
+    })
 
     pickerRef.current.addEventListener("mouseleave", (e) => {
-      e.currentTarget.classList.remove("enable");
-    });
-  }, []);
+      e.currentTarget.classList.remove("enable")
+    })
+  }, [])
 
   return (
     <div>
-      <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={addRoom}
-        onClick={onClickBackdrop}
-      >
+      <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={addRoom} onClick={onClickBackdrop}>
         <ModalAddWrapper
           sx={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: theme ? "white" : "#262626",
+            background: theme ? "white" : "#262626"
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: "#4eac6d" }}>
             <AddCommentIcon />
           </Avatar>
-          <Typography
-            component="h1"
-            variant="h5"
-            sx={{ mb: 3, color: theme ? "black" : "#a7a9b3" }}
-          >
+          <Typography component="h1" variant="h5" sx={{ mb: 3, color: theme ? "black" : "#a7a9b3" }}>
             Create new group
           </Typography>
           <ValidatorForm onSubmit={handleSubmit} style={{ width: "100%" }}>
@@ -196,7 +188,7 @@ export default function ModalAddRoom() {
                   validators={["required"]}
                   errorMessages={["Please enter room name"]}
                   style={{
-                    color: theme ? "#737373" : "#636464",
+                    color: theme ? "#737373" : "#636464"
                   }}
                 />
                 <Button
@@ -209,12 +201,10 @@ export default function ModalAddRoom() {
                     position: "absolute",
                     right: 0,
                     top: "50%",
-                    transform: "translate(10%,-40%)",
+                    transform: "translate(10%,-40%)"
                   }}
                 >
-                  <SentimentSatisfiedAltIcon
-                    sx={{ color: "#797c8c", width: 25, height: 25 }}
-                  />
+                  <SentimentSatisfiedAltIcon sx={{ color: "#797c8c", width: 25, height: 25 }} />
                 </Button>
                 <PickerWrapper ref={pickerRef}>
                   <Picker
@@ -244,17 +234,13 @@ export default function ModalAddRoom() {
                   validators={["required"]}
                   errorMessages={["Please enter room description"]}
                   style={{
-                    color: theme ? "#737373" : "#636464",
+                    color: theme ? "#737373" : "#636464"
                   }}
                 />
               </Grid>
             </Grid>
             <Buttons>
-              {error && (
-                <p style={{ color: "#d32f2f", margin: "24px 8px 16px 0" }}>
-                  Room name already exist!
-                </p>
-              )}
+              {error && <p style={{ color: "#d32f2f", margin: "24px 8px 16px 0" }}>Room name already exist!</p>}
               <Button
                 type="button"
                 variant="contained"
@@ -263,7 +249,7 @@ export default function ModalAddRoom() {
                   mt: 3,
                   mb: 2,
                   mr: 1,
-                  color: theme ? "white" : "black",
+                  color: theme ? "white" : "black"
                 }}
                 onClick={handleClose}
               >
@@ -276,7 +262,7 @@ export default function ModalAddRoom() {
                   bgcolor: "#4eac6d",
                   mt: 3,
                   mb: 2,
-                  color: theme ? "white" : "black",
+                  color: theme ? "white" : "black"
                 }}
               >
                 Create
@@ -286,5 +272,5 @@ export default function ModalAddRoom() {
         </ModalAddWrapper>
       </Backdrop>
     </div>
-  );
+  )
 }

@@ -50,7 +50,6 @@ const BoxStyled = styledd(Box)`
     right: 0;
     top: 3px;
     margin: 0;
-    
   }
 `
 
@@ -159,11 +158,11 @@ function CustomizedList() {
       /* ===================== */
       /* sort user */
       const usersFilted = newUsers.filter((u) => {
-        return user.uid !== u.uid
+        return user?.uid !== u.uid
       })
       const usersUpdate = usersFilted.map((u) => {
         const roomFound = rooms.find((room) => {
-          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+          return room.members.includes(u.uid) && room.members.includes(user?.uid) && room.private == true
         })
         let second = 0
         if (roomFound) {
@@ -183,11 +182,11 @@ function CustomizedList() {
     } else {
       /* start */
       const usersFilted = usersDisplay.filter((u) => {
-        return user.uid !== u.uid
+        return user?.uid !== u.uid
       })
       const usersUpdate = usersFilted.map((u) => {
         const roomFound = rooms.find((room) => {
-          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+          return room.members.includes(u.uid) && room.members.includes(user?.uid) && room.private == true
         })
         let second = 0
         if (roomFound) {
@@ -223,11 +222,11 @@ function CustomizedList() {
       /* ===================== */
       /* sort user */
       const usersFilted = users.filter((u) => {
-        return user.uid !== u.uid
+        return user?.uid !== u.uid
       })
       const usersUpdate = usersFilted.map((u) => {
         const roomFound = rooms.find((room) => {
-          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+          return room.members.includes(u.uid) && room.members.includes(user?.uid) && room.private == true
         })
         let second = 0
         if (roomFound) {
@@ -255,7 +254,7 @@ function CustomizedList() {
   const handleChatWindows = async (userSelected) => {
     dispatch(setStateChatWindows(true))
     const roomFound = rooms.find((room) => {
-      return room.members.includes(userSelected.uid) && room.members.includes(user.uid) && room.private == true
+      return room.members.includes(userSelected.uid) && room.members.includes(user?.uid) && room.private == true
     })
     if (roomFound) {
       if (roomFound.id !== roomSelected?.id) {
@@ -274,7 +273,7 @@ function CustomizedList() {
       const resultRoom = await firebaseServices.addDocument("rooms", {
         roomName: "Private room",
         roomDes: "Private room",
-        members: [user.uid, userSelected.uid],
+        members: [user?.uid, userSelected.uid],
         private: true
       })
       await firebaseServices.addDocument("messages", {
@@ -323,7 +322,7 @@ function CustomizedList() {
       return usersDisplay.map((u) => {
         /* handle show last chat */
         const roomFound = rooms.find((room) => {
-          return room.members.includes(u.uid) && room.members.includes(user.uid) && room.private == true
+          return room.members.includes(u.uid) && room.members.includes(user?.uid) && room.private == true
         })
         let textMessage = ""
         if (roomFound) {
@@ -332,10 +331,10 @@ function CustomizedList() {
           })
           if (messagesRemaining.length !== 0 && messagesRemaining[messagesRemaining.length - 1].uid) {
             if (messagesRemaining[messagesRemaining.length - 1].type === "image") {
-              textMessage = messagesRemaining[messagesRemaining.length - 1].uid === user.uid ? "you: " + "[image]" : "[image]"
+              textMessage = messagesRemaining[messagesRemaining.length - 1].uid === user?.uid ? "you: " + "[image]" : "[image]"
             } else {
               textMessage =
-                messagesRemaining[messagesRemaining.length - 1].uid === user.uid
+                messagesRemaining[messagesRemaining.length - 1].uid === user?.uid
                   ? "you: " + messagesRemaining[messagesRemaining.length - 1].text
                   : messagesRemaining[messagesRemaining.length - 1].text
             }

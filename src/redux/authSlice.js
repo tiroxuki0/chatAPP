@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
   login: false,
@@ -9,49 +9,52 @@ const initialState = {
   addUser: false,
   chatWindows: true,
   theme: true,
-  mobile: false,
-};
+  mobile: false
+}
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     setRegisterInfo: (state, action) => {
-      state.register = action.payload;
+      state.register = action.payload
     },
     setPendingEnd: (state) => {
-      state.pending = false;
+      state.pending = false
     },
     setMobile: (state, action) => {
-      state.mobile = action.payload;
+      state.mobile = action.payload
     },
     setTheme: (state) => {
-      state.theme = !state.theme;
+      state.theme = !state.theme
     },
     setStateModalAddRoom: (state, action) => {
-      state.addRoom = action.payload;
+      state.addRoom = action.payload
     },
     setStateModalAddUser: (state, action) => {
-      state.addUser = action.payload;
+      state.addUser = action.payload
     },
     setStateChatWindows: (state, action) => {
-      state.chatWindows = action.payload;
+      state.chatWindows = action.payload
     },
     signInStart: (state) => {
-      state.pending = true;
+      state.pending = true
     },
     signInSuccess: (state, action) => {
-      state.login = true;
-      state.pending = false;
-      state.user = action.payload;
+      state.login = true
+      state.pending = false
+      state.user = action.payload
+    },
+    getUserProfile: (state, action) => {
+      state.user = action.payload
     },
     signInFailed: (state) => {
-      state.login = false;
-      state.pending = false;
-      state.user = null;
-    },
-  },
-});
+      state.login = false
+      state.pending = false
+      state.user = null
+    }
+  }
+})
 
 // Action creators are generated for each case reducer function
 export const {
@@ -63,8 +66,9 @@ export const {
   setStateChatWindows,
   signInStart,
   signInSuccess,
+  getUserProfile,
   signInFailed,
-  setRegisterInfo,
-} = authSlice.actions;
+  setRegisterInfo
+} = authSlice.actions
 
-export default authSlice.reducer;
+export default authSlice.reducer

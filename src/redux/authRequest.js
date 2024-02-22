@@ -1,94 +1,94 @@
-import * as firebaseServices from "../firebase/services";
-import * as authActions from "./authSlice";
+import * as firebaseServices from "../firebase/services"
+import * as authActions from "./authSlice"
 
 const normalSignIn = async (dispatch, navigate, data) => {
-  dispatch(authActions.signInStart());
+  dispatch(authActions.signInStart())
   try {
-    const result = await firebaseServices.firebaseSignIn(data);
+    const result = await firebaseServices.firebaseSignIn(data)
     /*  */
     if (result.code === 0) {
       if (result.error.code.includes("user-not-found")) {
         // notify("error", `Your email is not valid!`);
-        dispatch(authActions.signInFailed());
-        return { code: 0, message: "Email is not valid" };
+        dispatch(authActions.signInFailed())
+        return { code: 0, message: "Email is not valid" }
       } else {
         // notify("error", `Wrong password!`);
-        dispatch(authActions.signInFailed());
-        return { code: 0, message: "Wrong password" };
+        dispatch(authActions.signInFailed())
+        return { code: 0, message: "Wrong password" }
       }
     } else {
       const userCheck = await firebaseServices.checkExist("users", {
         field: "email",
         operator: "==",
-        value: data.email,
-      });
+        value: data.email
+      })
       if (userCheck.code === 1) {
-        dispatch(authActions.signInFailed());
-        return { code: 0, message: "Email is not valid" };
+        dispatch(authActions.signInFailed())
+        return { code: 0, message: "Email is not valid" }
       }
       if (userCheck.data.password !== data.password) {
-        dispatch(authActions.signInFailed());
-        return { code: 0, message: "Wrong password!" };
+        dispatch(authActions.signInFailed())
+        return { code: 0, message: "Wrong password!" }
       }
-      dispatch(authActions.signInSuccess(userCheck.data));
-      navigate("/");
-      return { code: 1, message: "Sign in successfully" };
+      dispatch(authActions.signInSuccess(userCheck.data))
+      navigate("/")
+      return { code: 1, message: "Sign in successfully" }
     }
   } catch (err) {
-    dispatch(authActions.signInFailed());
-    return { code: 0, message: "Something went wrong!", err };
+    dispatch(authActions.signInFailed())
+    return { code: 0, message: "Something went wrong!", err }
   }
-};
+}
 
 const registerRequest = async (dispatch, navigate, data) => {
-  dispatch(authActions.signInStart());
+  dispatch(authActions.signInStart())
   try {
-    const result = await firebaseServices.createUser(data.email, data.password);
-    const { uid, providerId } = result.user;
+    const result = await firebaseServices.createUser(data.email, data.password)
+    const { uid, providerId } = result.user
     const resultAdd = await firebaseServices.addDocument("users", {
       ...data,
       uid,
-      providerId,
-    });
+      providerId
+    })
     dispatch(
       authActions.signInSuccess({
         id: resultAdd.docId,
-        ...resultAdd.data,
+        ...resultAdd.data
       })
-    );
-    navigate("/");
-    return { code: 1, message: "Signup successful" };
+    )
+    navigate("/")
+    return { code: 1, message: "Signup successful" }
   } catch (err) {
-    dispatch(authActions.signInFailed());
-    return { code: 0, message: "Something went wrong!" };
+    dispatch(authActions.signInFailed())
+    return { code: 0, message: "Something went wrong!" }
   }
-};
+}
 
 const facebookSignIn = async (dispatch, navigate) => {
-  dispatch(authActions.signInStart());
+  dispatch(authActions.signInStart())
   try {
-    const result = await firebaseServices.fbSignIn();
+    const result = await firebaseServices.fbSignIn()
     if (typeof result == "string") {
-      dispatch(authActions.signInFailed());
-      return { code: 0, message: "User cancel!" };
+      dispatch(authActions.signInFailed())
+      return { code: 0, message: "User cancel!" }
     }
-    console.log(result);
-    const { displayName, email, photoURL, uid } = result.data.user;
-    const providerId = result.data.providerId;
+    console.log(result)
+    const { displayName, email, photoURL, uid } = result.data.user
+    const providerId = result.data.providerId
     /* check user exist */
     const userCheck = await firebaseServices.checkExist("users", {
       field: "email",
       operator: "==",
-      value: email,
-    });
+      value: email
+    })
     if (userCheck.code === 0) {
       dispatch(
         authActions.signInSuccess({
           id: userCheck.data?.id,
-          ...userCheck.data,
+          ...userCheck.data
         })
-      );
-      navigate("/");
+      )
+      navigate("/")
     } else {
       const userRef = await firebaseServices.addDocument("users", {
         displayName,
@@ -96,48 +96,47 @@ const facebookSignIn = async (dispatch, navigate) => {
         photoURL,
         uid,
         providerId,
-        background:
-          "https://images.unsplash.com/photo-1611262588019-db6cc2032da3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-      });
+        background: "https://images.unsplash.com/photo-1611262588019-db6cc2032da3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
+      })
       dispatch(
         authActions.signInSuccess({
           id: userRef.docId,
-          ...userRef.data,
+          ...userRef.data
         })
-      );
-      navigate("/");
+      )
+      navigate("/")
     }
-    return result;
+    return result
   } catch (err) {
-    dispatch(authActions.signInFailed());
-    return err;
+    dispatch(authActions.signInFailed())
+    return err
   }
-};
+}
 
 const googleSignIn = async (dispatch, navigate) => {
-  dispatch(authActions.signInStart());
+  dispatch(authActions.signInStart())
   try {
-    const result = await firebaseServices.ggSignIn();
+    const result = await firebaseServices.ggSignIn()
     if (typeof result == "string") {
-      dispatch(authActions.signInFailed());
-      return { code: 0, message: "User cancel!" };
+      dispatch(authActions.signInFailed())
+      return { code: 0, message: "User cancel!" }
     }
-    const { displayName, email, photoURL, uid } = await result.data.user;
-    const providerId = await result.data.providerId;
+    const { displayName, email, photoURL, uid } = await result.data.user
+    const providerId = await result.data.providerId
     /* check user exist */
     const userCheck = await firebaseServices.checkExist("users", {
       field: "email",
       operator: "==",
-      value: email,
-    });
+      value: email
+    })
     if (userCheck.code === 0) {
       dispatch(
         authActions.signInSuccess({
           id: userCheck.data?.id,
-          ...userCheck.data,
+          ...userCheck.data
         })
-      );
-      navigate("/");
+      )
+      navigate("/")
     } else {
       const userRef = await firebaseServices.addDocument("users", {
         displayName,
@@ -145,22 +144,21 @@ const googleSignIn = async (dispatch, navigate) => {
         photoURL,
         uid,
         providerId,
-        background:
-          "https://images.unsplash.com/photo-1611262588019-db6cc2032da3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
-      });
+        background: "https://images.unsplash.com/photo-1611262588019-db6cc2032da3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80"
+      })
       dispatch(
         authActions.signInSuccess({
           id: userRef.docId,
-          ...userRef.data,
+          ...userRef.data
         })
-      );
-      navigate("/");
+      )
+      navigate("/")
     }
-    return result;
+    return result
   } catch (err) {
-    dispatch(authActions.signInFailed());
-    return err;
+    dispatch(authActions.signInFailed())
+    return err
   }
-};
+}
 
-export { normalSignIn, registerRequest, facebookSignIn, googleSignIn };
+export { normalSignIn, registerRequest, facebookSignIn, googleSignIn }

@@ -7,23 +7,26 @@ import Container from "@mui/material/Container"
 import { useDispatch } from "react-redux"
 import ListItems from "./listItems"
 import ChatPage from "./ChatPage"
-import styledd from "styled-components"
+import styled from "styled-components"
 import { setUsers, setMessages, setRooms } from "../../redux/dataSlice"
 import useFirestore from "../../hooks/useFirestore"
+import * as authActions from "../../redux/authSlice"
+import instances from "../../@core/plugin/axios"
+import jwtDefaultConfig from "../../@core/auth/jwt/jwtDefaultConfig"
 
-const BoxStyled = styledd(Box)`
+const BoxStyled = styled(Box)`
   &::-webkit-scrollbar {
     width: 8px;
-    height: 8px
+    height: 8px;
   }
   &::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+    background: #f1f1f1;
+    border-radius: 10px;
   }
 
   &::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: #888;
+    border-radius: 10px;
+    background: #888;
   }
 
   &::-webkit-scrollbar-thumb:hover {
@@ -31,7 +34,7 @@ const BoxStyled = styledd(Box)`
   }
 `
 
-const ListStyled = styledd(List)`
+const ListStyled = styled(List)`
   height: 100%;
   display: flex;
   justify-content: space-between;
@@ -53,6 +56,16 @@ function DashboardContent() {
   const usersFirestore = useFirestore("users")
   const messagesFirestore = useFirestore("messages")
 
+  const getMyProfile = () => {
+    instances.get("/user/profile").then((response) => {
+      if (response?.data?.data) {
+        const userData = response?.data?.data
+        localStorage.setItem(jwtDefaultConfig.storageUserData, JSON.stringify({ ...userData }))
+        dispatch(authActions.getUserProfile(userData))
+      }
+    })
+  }
+
   React.useEffect(() => {
     if (roomsFirestore) {
       dispatch(setRooms(roomsFirestore))
@@ -73,6 +86,10 @@ function DashboardContent() {
       dispatch(setMessages(messagesFirestore))
     }
   }, [messagesFirestore])
+
+  React.useEffect(() => {
+    getMyProfile()
+  }, [])
 
   return (
     <ThemeProvider theme={darkTheme}>
